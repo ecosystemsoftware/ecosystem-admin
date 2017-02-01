@@ -1,6 +1,8 @@
-# EcoSystem Admin Panel
+![](https://raw.githubusercontent.com/ecosystemsoftware/ecosystem-website/master/themes/ecosystem/static/images/eco-logo-colour.png)
 
-This is the EcoSystem admin panel - to be used with the EcoSystem server
+# EcoSystem Admin Panel App
+
+This is the EcoSystem admin panel, created with Polymer. It is intended to be used alongside the [EcoSystem server](https://github.com/ecosystemsoftware/ecosystem-server).
 
 ### Setup
 
@@ -50,3 +52,7 @@ This command will run
 browsers currently installed on your machine.
 
     polymer test
+
+### Licence
+
+**Build freely with EcoSystem**.  The EcoSystem Server and The EcoSystem Admin Panel App are licensed under Apache 2.0.  The content on the [EcoSystem website] (http://www.ecosystem.software) is licensed under a [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License](http://creativecommons.org/licenses/by-nc-nd/4.0/).  Neither licence grants permission to use the trade names, trademarks, service marks, or product names of EcoSystem Software LLP, including the EcoSystem logo and symbol, except as required for reasonable and customary use.
