@@ -1,0 +1,171 @@
+<!--Copyright 2017 EcoSystem Software LLP
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.-->
+
+<!--Polymer-->
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<!--iron components-->
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
+<!--paper components-->
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<!--eco components-->
+<link rel="import" href="eco-behaviors.html">
+<!--custom components-->
+<link rel="import" href="../custom/custom-styles.html">
+<link rel="import" href="../custom/custom-actions.html">
+<link rel="import" href="../custom/custom-settings.html">
+
+<dom-module id="eco-login-form">
+
+    <template>
+
+        <style include="custom-styles">
+
+               #loginContainer {
+                display: block;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background-color: var(--secondary-color); 
+            }
+
+            #loginBox {
+                width: 50%;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 5em;
+                color: var(--primary-text-color);
+                min-width: 250px;
+                background-color: #fff;
+                box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+                padding: 2em;
+            }
+
+            #logo {
+                width: 100%;
+            }
+
+            #blurb {
+                margin: 1em;
+                font-size: 120%;
+                text-align: center;
+            }
+
+            #loginActions {
+                text-align: center;
+                margin: 2em;
+            }
+
+             #loginActions paper-button {
+                --paper-button: {
+                    background-color: var(--primary-color);
+                    color: white;
+                }
+            }
+
+        </style>
+
+
+<div id="loginContainer">
+
+    <div id="loginBox">
+
+        <img id="logo" src="/images/logo-horizontal.png" />
+
+        <div id="blurb">
+            In order to log on, you need to request a temporary, 6-character passcode to be sent your email address. Once you have this
+            code, return here and enter the code within 5 minutes, otherwise it will expire. You only need to do this once
+            per machine, or until you decide to log out.
+        </div>
+
+        <form is="iron-form" id="requestCodeForm" content-type="application/json" method="post" action="[[ publicApiRoot ]]/magiccode">
+            <paper-input error-message="Please enter a valid email address" name="email" label="Step 1: Enter email here to request code"
+                type="email" value="{{ email }}" required></paper-input>
+            <paper-button raised on-tap="_submitRequestCodeForm">Request Code</paper-button>
+        </form>
+
+        <form is="iron-form" id="loginForm" content-type="application/json" method="post" action="[[ publicApiRoot ]]/login">
+            <paper-input error-message="Please enter a valid email address" name="username" label="You are logging in with this email address"
+                type="email" value="[[ email ]]" required></paper-input>
+            <paper-input name="password" label="Enter the 6-character code you received here" type="text" minlength="6" error-message="Please enter a valid 6-character code"
+                required></paper-input>
+            <div id="loginActions">
+                <paper-button raised on-tap="_submitLoginForm">Login</paper-button>
+            </div>
+        </form>
+
+    </div>
+
+</div>
+
+</template>
+
+
+<script>
+    Polymer({
+        is: 'eco-login-form',
+
+        behaviors: [EcoBehaviors.ApiBehavior, EcoCustom.Settings],
+
+        properties: {
+            jwt: {
+                type: String,
+                reflectToAttribute: true,
+                notify: true
+            }
+        },
+
+        listeners: {
+            'loginForm.iron-form-error': '_loginFailed',
+            'loginForm.iron-form-response': '_loginOK',
+            'requestCodeForm.iron-form-error': '_codeRequestFailed',
+            'requestCodeForm.iron-form-response': '_codeRequestOK'
+        },
+
+        _submitLoginForm: function () {
+            this.$.loginForm.submit();
+        },
+
+        _submitRequestCodeForm: function () {
+            this.$.requestCodeForm.submit();
+        },
+
+        _loginFailed: function () {
+            alert("Login was unsuccessful. Please verify email and password and try again");
+        },
+
+        _loginOK: function (e) {
+            var token = e.detail.__data__.response.token;
+            if (token) {
+                this.set('jwt', token);
+                alert("Welcome to EcoSystem");
+            } else {
+                alert("Login was unsuccessful. Please verify email and password and try again");
+            }
+        },
+
+        _codeRequestFailed: function (e) {
+            alert("Code request was unsuccessful. Please verify email and password and try again");
+        },
+
+        _codeRequestOK: function (e) {
+            alert("Code requested.  Now go and check your email");
+        }
+
+    })
+</script>
+
+</dom-module>

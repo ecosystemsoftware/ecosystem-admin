@@ -1,0 +1,239 @@
+<!--Copyright 2017 EcoSystem Software LLP
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.-->
+
+<!--Polymer-->
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<!--app-layout components-->
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<!--app-route components-->
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<!--paper components-->
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<!--iron components-->
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
+<!--eco components-->
+<link rel="import" href="eco-login-form.html">
+<link rel="import" href="eco-view.html">
+<link rel="import" href="eco-404.html">
+<link rel="import" href="eco-behaviors.html">
+<!--custom components-->
+<link rel="import" href="../custom/custom-styles.html">
+<link rel="import" href="../custom/custom-actions.html">
+<link rel="import" href="../custom/custom-settings.html">
+
+<dom-module id="eco-admin-app">
+
+    <template>
+
+        <style include="custom-styles">
+    
+            :host {
+            display: block;
+            }
+
+            app-header {
+                color: #fff;
+                background-color: var(--secondary-color);
+            }
+
+            app-header paper-icon-button {
+                --paper-icon-button-ink-color: white;
+            }
+
+            app-drawer {
+            --app-drawer-content-container: {
+                background-color: var(--sidebar-color);
+            } 
+            }
+
+            #sidebarLogoContainer{
+                text-align: center;
+            }
+
+            #sidebarLogo {
+                max-width: 100%;
+                max-height: 120px;
+                padding: 2em;
+            }
+
+            #mainLogo {
+                max-height: 30px;
+            }
+
+            .drawer-list {
+                margin: 0 20px;
+            }
+
+            .drawer-list a {
+                display: block;
+                padding: 0 16px;
+                text-decoration: none;
+                color: var(--primary-text-color);
+                font-size: 1.3rem;
+                line-height: 2.2rem;
+
+            }
+
+            .drawer-list a.iron-selected {
+                color: var(--primary-text-color);
+                font-weight: bold;
+            }
+
+        </style>
+
+<!-- App location and routing -->
+<app-location route="{{route}}"></app-location>
+<app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
+
+<!-- Local storage for JWT -->
+<iron-localstorage use-raw name="token" value="{{jwt}}"></iron-localstorage>
+
+<!--Ajax request for config lists -->
+<iron-ajax method="GET" id="configRequest" headers="[[ _getJWT(jwt) ]]" handle-as="json"></iron-ajax>
+
+<!--Display the login form if there is no JWT in local storage -->
+<template is="dom-if" if="[[ !jwt]]">
+    <eco-login-form jwt="{{ jwt }}"></eco-login-form>
+</template>
+
+<!--Otherwise display the main app
+Note that the effect of logging on is to set a JWT under 'token' in local storage 
+which will immidiately hide the login-form component and activate the main app-->
+<template is="dom-if" if="[[ jwt ]]">
+
+    <app-drawer-layout fullbleed responsive-width="1000px">
+        <!-- Drawer content -->
+        <app-drawer>
+
+            <div id="sidebarLogoContainer">
+                <img id="sidebarLogo" src="/images/logo-vertical.png" />
+                <h2>{{ adminPanelTitle }}</h2>
+            </div>
+
+            <iron-selector class="drawer-list" role="navigation">
+                <template is="dom-repeat" items="[[ sideMenu ]]" as="menuItem">
+                    <a href="/view/{{ menuItem.table }}?view={{ menuItem.view }}">{{ menuItem.title }}</a>
+                </template>
+            </iron-selector>
+
+        </app-drawer>
+
+        <!-- Main content -->
+        <app-header-layout has-scrolling-region>
+
+            <app-header fixed condenses effects="waterfall">
+                <app-toolbar>
+                    <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+                    <div main-title>
+                        <img id="mainLogo" src="/images/logo-horizontal.png" />
+                    </div>
+                    <paper-button on-tap="_logout">Log Out</paper-button>
+                    <paper-icon-button icon="arrow-back" on-tap="_goBack"></paper-icon-button>
+                </app-toolbar>
+            </app-header>
+
+            <iron-pages selected="[[ routeData.page ]]" attr-for-selected="name" fallback-selection="eco-404" role="main">
+
+                <eco-view name="view" jwt="[[ jwt ]]" route="[[ subroute ]]" config="[[ config ]]"></eco-view>
+                <div name="">
+                    <h1>Welcome to EcoSystem</h1>
+                    <h2>Use the menu on the left to get started</h2>
+                </div>
+                <eco-404 name="eco-404"></eco-404>
+
+            </iron-pages>
+
+        </app-header-layout>
+
+    </app-drawer-layout>
+
+</template>
+
+</template>
+
+<script>
+    Polymer({
+
+        is: 'eco-admin-app',
+
+        behaviors: [EcoBehaviors.ApiBehavior, EcoCustom.Settings],
+
+        properties: {
+            route: {
+                type: Object
+            },
+            routeData: {
+                type: Object
+            },
+            config: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            }
+        },
+
+        listeners: {
+            'updateConfig': '_updateConfig',
+            'configRequest.response': '_configUpdated'
+        },
+
+        _goBack: function () {
+            window.history.back();
+        },
+
+        _showPage404: function () {
+            this.page = 'eco-404';
+        },
+
+        _logout: function () {
+            var r = confirm("Are you sure you want to log out?");
+            if (r == true) {
+                this.set('jwt', null);
+            }
+        },
+
+        _updateConfig: function (e) {
+            this.$.configRequest.url = this.apiRoot + "/" + e.detail.table
+            this.$.configRequest.generateRequest();
+        },
+
+        _configUpdated: function (e) {
+            //Once the config list has come in, we set it on the 'config' object.
+            //It is then always available to views downstream
+            //The response is on e.detail.__data__.response, but there is no obvious simple way to retrieve the name of the table that was requesteed
+            //so we parse it out from the URL which IS available on e.detail.__data__.xhr.responseURL
+            var URLwas = e.detail.__data__.xhr.responseURL;
+            var n = URLwas.lastIndexOf("/");
+            var path = 'config.' + URLwas.substring(n + 1, URLwas.length);
+            this.set(path, e.detail.__data__.response);
+        }
+
+    });
+</script>
+</dom-module>

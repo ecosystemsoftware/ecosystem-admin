@@ -1,0 +1,22 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/eco-admin-app.html",
+  "fragments": [
+    "src/eco-404.html",
+    "src/eco-admin-app.html",
+    "src/eco-behaviors.html",
+    "src/eco-field-block.html",
+    "src/eco-list-block.html",
+    "src/eco-login-form.html",
+    "src/eco-view-block.html"
+  ],
+  "sourceGlobs": [
+   "src/**/*",
+   "images/**/*",
+   "bower.json"
+  ],
+  "includeDependencies": [
+    "manifest.json",
+    "bower_components/webcomponentsjs/webcomponents-lite.min.js"
+  ]
+}

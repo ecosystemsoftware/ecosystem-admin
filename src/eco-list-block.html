@@ -1,0 +1,619 @@
+<!--Copyright 2017 EcoSystem Software LLP
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.-->
+
+<!--Polymer-->
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<!--iron components-->
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/editor-icons.html">
+<!--paper components-->
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<!--eco components-->
+<link rel="import" href="eco-behaviors.html">
+<!--custom components-->
+<link rel="import" href="../custom/custom-styles.html">
+<link rel="import" href="../custom/custom-actions.html">
+<link rel="import" href="../custom/custom-settings.html">
+
+<dom-module id="eco-list-block">
+
+    <template>
+
+        <style include="custom-styles">
+        
+            :host {
+                display: block;
+                margin: 0.5em;
+                color: black;
+                background-color: #fff;
+                box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+                padding: 0.5em;
+            }
+
+            .title {
+                font-size: 125%;
+                font-weight: bold;
+                border-bottom: 0.1em solid black;
+                margin-bottom: 0.5em;
+                padding-bottom: 0.5em;
+            }
+
+            .content tr {
+               border-bottom: solid 1px black; 
+            }
+
+            th.active-ordered paper-icon-button {
+                color: var(--primary-color);
+            }
+
+            th.active-ordered.desc paper-icon-button {
+                -webkit-transform: rotate(180deg);
+                -moz-transform: rotate(180deg);
+                -o-transform: rotate(180deg);
+                -ms-transform: rotate(180deg);
+                transform: rotate(180deg);
+            }
+
+            img.line-image {
+                max-height: 35px;
+                max-width: 50px; 
+            }
+
+            paper-input.cellInput {
+                --paper-input-container: {
+                    padding: 0px 0px 0px 0px;
+                };
+                --paper-input-container-underline: {
+                    display: none;
+                };
+                --paper-input-container-underline-focus: {
+                    display: none;
+                };
+                --paper-input-container-input: {
+                    font-size: 100%;
+                    color: black;
+                };
+            }
+
+            .listCell {
+                background-color:#FbFbFb;
+				opacity: 0.8;
+                padding: 0.3em 1em 0.3em 1em;
+            }
+
+            .listCellContentContainer {
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+            }
+
+            .listCell.cellEdittrue {
+                background-color: #f8f8f8;
+                padding: 0.3em 1em 0.3em 1em;
+            }
+
+            a {
+                color: var(--primary-color);
+            }
+
+            paper-icon-button {
+                color: var(--icon-button-color);
+            }
+
+
+        </style>
+
+
+
+<!--Ajax request for the rows in the grid _getParams(where, orderBy, limit, desc)-->
+<iron-ajax headers="[[ _getJWT(jwt) ]]" auto id="listRequest" method="GET" params="[[ params ]]" url="[[ apiRoot ]]/[[ table ]]"
+    handle-as="json" last-response="{{ rows }}" debounce-duration="300"></iron-ajax>
+<!--Ajax request for actions-->
+<iron-ajax headers="[[ _getJWT(jwt) ]]" id="actionRequest" handle-as="json" content-type="application/json"></iron-ajax>
+<!--Ajax request for new record-->
+<iron-ajax method="POST" body="[[ newRecord ]]" url="[[ apiRoot ]]/[[ table ]]" headers="[[ _getJWT(jwt) ]]" id="newRecordRequest"
+    handle-as="json" content-type="application/json"></iron-ajax>
+
+<div class="title">
+    [[ title ]]
+</div>
+
+<template is="dom-if" if="[[ keywordFilter ]]">
+    <paper-input type="text" error-message="Invalid input!" min="3" label="Filter by [[ keywordFilterTitle ]]" value="{{ searchTerm }}">
+        <iron-icon prefix icon="search"></iron-icon>
+    </paper-input>
+</template>
+
+<!--New-->
+<paper-dialog id="newDialog">
+    <h2>Add New Entry to [[ title ]]</h2>
+    <p>
+        Enter the following required fields in order to create a new record.
+    </p>
+    <p>
+        <template is="dom-repeat" items="[[ requiredFieldsForNew  ]]" as="requiredField">
+            <paper-input type="text" label="[[ requiredField.label ]]" on-change="_newRecordFieldChanged"></paper-input>
+        </template>
+        <paper-button raised on-tap="_createNew">Add</paper-button>
+    </p>
+
+</paper-dialog>
+
+<template is="dom-if" if="[[ requiredFieldsForNew ]]">
+    <paper-icon-button icon="add-circle" on-tap="_showNewDialog"></paper-icon-button>
+</template>
+
+<!--Bulk selection action buttons-->
+<template is="dom-repeat" items="[[ bulkActions ]]" as="action">
+    <paper-button raised disabled$="[[ !numberOfLinesSelected ]]" on-tap="_runBulkAction">[[ action.label ]]</paper-button>
+</template>
+
+<table class="eco-grid" hidden$="[[ !_showTable(searchTerm, hideIfNoKeyword) ]]">
+    <thead>
+        <tr>
+            <!--Bulk selection checkboxes-->
+            <template is="dom-if" if="[[ allowSelect ]]">
+                <th></th>
+            </template>
+            <!--Image -->
+            <template is="dom-if" if="[[ showImage ]]">
+                <th></th>
+            </template>
+            <!--Data Columns-->
+            <template is="dom-repeat" items="[[ dataColumns ]]" as="column">
+                <th class$="[[ _isActiveOrdered(column, params.orderBy) ]]">[[ column.label ]]
+                    <span hidden$="[[ !allowSort ]]">
+                        <paper-icon-button icon="filter-list" on-tap="_toggleOrder">
+                        </paper-icon-button>
+                    </span>
+                </th>
+            </template>
+            <!--Action Columns-->
+            <template is="dom-repeat" items="[[ actionColumns ]]" as="column">
+                <th> [[ column.label ]]</th>
+            </template>
+        </tr>
+    </thead>
+    <tbody hidden$="[[ !rows ]]">
+        <template id="mainlist" is="dom-repeat" items="[[ rows ]]" as="row">
+            <tr>
+                <!--Bulk selection checkboxes-->
+                <template is="dom-if" if="[[ allowSelect ]]">
+                    <td>
+                        <paper-checkbox class="bulkselection-checkbox" on-change="_bulkSelectChanged"></paper-checkbox>
+                    </td>
+                </template>
+                <!--Image -->
+                <template is="dom-if" if="[[ showImage ]]">
+                    <td><img class="line-image" src$="[[ publicApiRoot ]]/img/[[ _selectImage(row) ]]?width=100" /></td>
+                </template>
+                <!--Data Columns-->
+                <template is="dom-repeat" items="[[ dataColumns ]]" as="column">
+                    <td class$="listCell cellEdit[[ _showEdit(column, globalAllowEdit) ]]">
+                        <template is="dom-if" if="[[ column.linkTo ]]">
+                            <a href="/view/[[ column.linkTable ]]/[[ _getLink(row,column) ]][[ _getView(column) ]]">
+                                        [[ _getCell(row,column) ]]
+                                        </a>
+                        </template>
+                        <template is="dom-if" if="[[ !column.linkTo ]]">
+                            <template is="dom-if" if="[[ _showEdit(column, globalAllowEdit) ]]">
+                                <paper-input label="Edit [[ _getCell(row,column) ]]" class="cellInput" type="[[ column.edit.type ]]" value="[[ _getCell(row,column) ]]"
+                                    on-change="_emitLineUpdateEvent"></paper-input>
+                            </template>
+                            <template is="dom-if" if="[[ !_showEdit(column, globalAllowEdit) ]]">
+                                <div class="listCellContentContainer">
+                                    [[ _getCell(row,column) ]]
+                                </div>
+
+                            </template>
+
+                        </template>
+                    </td>
+                </template>
+                <!--Action Columns-->
+                <template is="dom-repeat" items="[[ actionColumns ]]" as="column">
+                    <td>
+                        <paper-icon-button icon$="[[ column.icon ]]" on-tap="_runLineAction"></paper-icon--button>
+                    </td>
+                </template>
+            </tr>
+        </template>
+    </tbody>
+</table>
+
+<div style="text-align:center; padding: 1em; font-size: large;" hidden$="[[ rows ]]"> Loading [[ title ]] ...
+</div>
+
+<array-selector id="selector" items="{{rows}}" selected="{{bulkSelection}}" multi toggle></array-selector>
+
+<content></content>
+
+
+
+</template>
+
+<script>
+        Polymer({
+
+            is: 'eco-list-block',
+
+            behaviors: [EcoBehaviors.ApiBehavior, EcoCustom.Settings, EcoCustom.Actions],
+
+            properties: {
+                jwt: String,
+                globalAllowEdit: {
+                    type: Boolean,
+                    value: false
+                },
+                table: {
+                    type: String,
+                    observer: '_resetRows'
+                },
+                restrictRecord: {
+                    type: String,
+                    observer: '_restrict'
+                },
+                restrictField: String,
+                title: String,
+                dataColumns: Array,
+                actionColumns: Array,
+                bulkActions: Array,
+                requiredFieldForNew: Array,
+                params: {
+                    type: Object,
+                    value: function () {
+                        return {
+                            "orderBy": "id",
+                            "limit": "100"
+                        };
+                    }
+                },
+                searchTerm: {
+                    type: String,
+                    observer: '_searchTermUpdated'
+                },
+                allowSort: {
+                    type: Boolean,
+                    value: false
+                },
+                allowSelect: {
+                    type: Boolean,
+                    value: false
+                },
+                confirmLineActions: {
+                    type: Boolean,
+                    value: true
+                },
+                showImage: {
+                    type: Boolean,
+                    value: false
+                },
+                hideIfNoKeyword: {
+                    type: Boolean,
+                    value: false
+                },
+                keywordFilter: {
+                    type: String
+                },
+                blockConfig: {
+                    type: Object,
+                    observer: '_setBlockConfig'
+                },
+                bulkSelection: {
+                    type: Array,
+                    reflectToAttribute: true,
+                    notify: true
+                },
+                newRecord: {
+                    type: Object,
+                    value: function () {
+                        return {};
+                    }
+                },
+                newRecordLinkView: String
+            },
+
+            observers: [
+                '_bulkSelectionChanged(bulkSelection.splices)'
+            ],
+
+            listeners: {
+                'updateLine': '_updateLine',
+                'actionRequest.response': '_updateAll',
+                'listRequest.response': '_listUpdated', //Clear checkboxes whenever the list is updated
+                'newRecordRequest.response': '_newRecordCreated',
+                'newRecordRequest.error': '_newRecordNotCreated'
+            },
+
+            _selectImage: function (row) {
+                row.images = row.images || [];
+                return row.image || row.images[0]
+            },
+
+            _showTable: function (word, hide) {
+                return word || !hide;
+            },
+
+            _restrict: function (idToRestrictBy) {
+                // If a restrictField has been specified, then add to params
+                if (this.restrictField) {
+                    var targetPath = "params." + this.restrictField;
+                    this.set(targetPath, "='" + idToRestrictBy + "'");
+                }
+            },
+
+            _setBlockConfig: function (newBlockConfig) {
+                //Need to RESET the attributes otherwise previous view will not be completely reset when block changes.
+                //This is a bit hacky - need to think of a better way
+                this.title = "";
+                this.dataColumns = [];
+                this.actionColumns = [];
+                this.bulkActions = [];
+                this.params = {
+                    "orderBy": "id",
+                    "limit": "100"
+                };
+                this.allowSort = false;
+                this.allowSelect = false;
+                this.confirmLineActions = false;
+                this.showImage = false;
+                this.keywordFilter = "";
+                this.keywordFilterTitle = "";
+                this.searchTerm = "";
+
+                //Merge in the the block configuration object specified as an attribute.
+                //The reason we do it like this rather than passing in the individual attributes is that some attributes may not be be specified
+                // in the block config.  When this happens, and if we specify attributes that don't exist when we create the element, the defaults get overriden
+                // and the whole things break.
+                Object.assign(this, newBlockConfig);
+
+            },
+
+            _resetRows: function () {
+                this.set('rows', []);
+            },
+
+            //Run line action
+            _runLineAction: function (e) {
+                var text = "Are you sure you want to " + e.model.__data__.column.label;
+                var r = !this.confirmLineActions || confirm(text);
+                if (r) {
+                    //Callback will only be correctly assigned if it a) is specifed, and b) exists
+                    var callback = this[e.model.__data__.column.actionFunction];
+                    //Only do if the function has been specified
+                    if (callback) {
+                        var item = e.model.dataHost.dataHost.__data__.row;
+                        callback(item, this);
+                    } else {
+                        //Else show an error message
+                        this.fire('showMessage', {
+                            "text": "Error: No action or incorrect action specified"
+                        });
+                    }
+                }
+            },
+
+            //Built-in Line Actions which can be referenced from actionColumns without writing a function in custom actions
+            deleteLine: function (item, c) {
+                c.$.actionRequest.method = "DELETE";
+                c.$.actionRequest.url = c.apiRoot + "/" + c.table + "/" + item.id;
+                c.$.actionRequest.generateRequest();
+            },
+
+            _showNewDialog: function () {
+                this.$.newDialog.open();
+            },
+
+            _newRecordFieldChanged: function (e) {
+                var n = Polymer.dom(e);
+                var p = "newRecord." + e.model.__data__.requiredField.name;
+                var newValue = n.rootTarget.__data__.value || n.event.target.__data__.bindValue; //Deal with safari/chrome differences
+                this.set(p, newValue);
+            },
+
+            _createNew: function (e) {
+                this.$.newRecordRequest.generateRequest();
+            },
+
+            _newRecordCreated: function (e) {
+                location.assign("/view/" + this.table + "/" + e.detail.__data__.response.id + "?view=" + this.newRecordLinkView);
+            },
+
+            _newRecordNotCreated: function (e) {
+                console.log(e);
+            },
+
+
+            // Run every time a bulk action event is emitted.
+            // Will cycle through the items selected, runnign a callback function specified as a custom behaviour
+            // The function name should be exactly the same as the event emitted name
+            _runBulkAction: function (e) {
+                //Depending on the configuration, will ask for confirmation first
+                var text = "Are you sure you want to " + e.model.__data__.action.label;
+                var r = !e.model.__data__.action.confirm || confirm(text);
+                if (r) {
+                    //Callback will only be correctly assigned if it a) is specifed, and b) exists
+                    var callback = this[e.model.__data__.action.actionFunction];
+                    //Only do if the function has been specified
+                    if (callback) {
+                        var items = this.bulkSelection;
+                        for (i = 0; i < items.length; i++) {
+                            callback(items[i], this);
+                        }
+                    } else {
+                        //Else show an error message
+                        this.fire('showMessage', {
+                            "text": "Error: No action or incorrect action specified"
+                        });
+                    }
+                }
+            },
+
+            _searchTermUpdated: function () {
+                if (this.searchTerm) {
+                    p = 'params.' + this.keywordFilter;
+                    this.set(p, "ILIKE '%" + this.searchTerm + "%'");
+                }
+            },
+
+            _updateAll: function (e) {
+                this.fire('blockUpdated');
+            },
+
+            refresh: function () {
+                this.$.listRequest.generateRequest();
+            },
+
+            //_showEdit decides wether to show a cell as an input
+            //For this to be the case, globalEdit on the component needs to be enabled, and
+            //that particular column should have the 'edit' attribute specified.
+            _showEdit: function (column, globalEdit) {
+                return (column.edit && globalEdit);
+            },
+
+            _bulkSelectionChanged: function () {
+                this.set('numberOfLinesSelected', this.bulkSelection.length);
+            },
+
+            _listUpdated: function () {
+                this._clearBulkSelection();
+                //If no datacolumns have been specified in the spec, then autogenerate some simple ones
+                //once the list comes in
+                if (!this.dataColumns) {
+                    this._setDefaultDataColumns();
+                }
+            },
+
+            _setDefaultDataColumns: function () {
+                defaultDataColumns = [];
+                //Take the first row as an example object
+                firstRow = this.rows[0];
+                //Loop over the keys
+                for (var key in firstRow) {
+                    defaultDataColumns.push({
+                        "name": key,
+                        "heading": key.replace(/_|-/gi, " ").toUpperCase() //Beautify
+                    });
+                }
+
+                this.set('dataColumns', defaultDataColumns);
+            },
+
+            //_clearBulkSelection clears the checkboxes by removing the 'checked' attribute
+            _clearBulkSelection: function () {
+                var checkBoxes = document.getElementsByClassName("bulkselection-checkbox");
+                for (i = 0; i < checkBoxes.length; i++) {
+                    checkBoxes[i].removeAttribute("checked");
+                }
+            },
+
+
+
+            //Need to consider the performace implications of running this funciton for every cell
+            //Is there another way to cross reference cell/row in the template directly
+            _getCell: function (row, column) {
+                return row[column.name];
+            },
+
+            _getLink: function (row, column) {
+                return row[column.linkTo];
+            },
+
+            _getView: function (column) {
+                if (column.linkView) {
+                    return "?view=" + column.linkView;
+                } else {
+                    return "";
+                }
+            },
+
+            _testIf: function (column) {
+                //   return column.name != this.orderBy;
+                //TODO = work out what icons to display
+                return true;
+            },
+
+            //_toggleOrder activates sorting for a column and/or switches between ascending and descending
+            _toggleOrder: function (e) {
+                if (this.params.orderBy == e.model.__data__.column.name) {
+                    //If currently ordered by this column, without desc, switch to ordered desc
+                    this.set('params.orderBy', e.model.__data__.column.name + " DESC");
+                } else {
+                    //If not then we are currenty either ordered by this column with desc, or alternatively
+                    //not ordered by this column.  Either way, we order by this column without desc.
+                    this.set('params.orderBy', e.model.__data__.column.name);
+                }
+            },
+
+            //_isActiveOrdered reports to a column heading whether that column is currently active for sorting
+            //and whether its ascending or descending
+            _isActiveOrdered: function (column, orderBy) {
+                if (orderBy == column.name) {
+                    return "active-ordered" //If exact match, then its ordererd asc
+                } else if (orderBy.includes(column.name)) {
+                    return "active-ordered desc"; //else, just an include means its ordered desc
+                } else {
+                    return;
+                } //if neither of the above, then its not ordered by this column
+            },
+
+            _isSelected: function (bulkSelected, row) {
+                console.log(bulkSelected);
+                console.log(row.id);
+            },
+
+            _bulkSelectChanged: function (e) {
+                var item = this.$.mainlist.itemForElement(e.target);
+                if (e.target.checked) {
+                    this.$.selector.select(item);
+                } else {
+                    this.$.selector.deselect(item);
+                }
+            },
+
+            _emitLineUpdateEvent: function (e) {
+                //Normalise first to avoid cross browser shady/shadow issues
+                var n = Polymer.dom(e);
+                this.debounce('actionRequest', function () {
+                    this.fire('updateLine', {
+                        "lineUpdated": n.event.model.__data__.row.id,
+                        "fieldUpdated": n.event.model.__data__.column.name,
+                        "newValue": n.rootTarget.__data__.value || n.event.target.__data__.bindValue //Deal with safari/chrome differences 
+                    });
+                }, 300);
+            },
+
+            _updateLine: function (e) {
+                this.$.actionRequest.method = "PATCH";
+                this.$.actionRequest.url = this.apiRoot + "/" + this.table + "/" + e.detail.lineUpdated;
+                postBody = {};
+                postBody[e.detail.fieldUpdated] = e.detail.newValue;
+                this.$.actionRequest.body = postBody;
+                this.$.actionRequest.generateRequest();
+            },
+
+
+
+        });
+    </script>
+
+</dom-module>
