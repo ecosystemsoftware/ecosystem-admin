@@ -54,6 +54,7 @@
                 border-bottom: 0.1em solid black;
                 margin-bottom: 0.5em;
                 padding-bottom: 0.5em;
+                color: var(--primary-text-color);
             }
 
             .content tr {
@@ -150,7 +151,7 @@
         Enter the following required fields in order to create a new record.
     </p>
     <p>
-        <template is="dom-repeat" items="[[ requiredFieldsForNew  ]]" as="requiredField">
+        <template is="dom-repeat" items="[[ requiredFieldsForNew ]]" as="requiredField">
             <paper-input type="text" label="[[ requiredField.label ]]" on-change="_newRecordFieldChanged"></paper-input>
         </template>
         <paper-button raised on-tap="_createNew">Add</paper-button>
@@ -158,9 +159,7 @@
 
 </paper-dialog>
 
-<template is="dom-if" if="[[ requiredFieldsForNew ]]">
-    <paper-icon-button icon="add-circle" on-tap="_showNewDialog"></paper-icon-button>
-</template>
+<span hidden$="[[ !_showArray(requiredFieldsForNew) ]]"><paper-icon-button icon="add-circle" on-tap="_showNewDialog"></paper-icon-button></span>
 
 <!--Bulk selection action buttons-->
 <template is="dom-repeat" items="[[ bulkActions ]]" as="action">
@@ -277,7 +276,10 @@
                 dataColumns: Array,
                 actionColumns: Array,
                 bulkActions: Array,
-                requiredFieldForNew: Array,
+                requiredFieldsForNew: {
+                    type: Array,
+                    value: function(){ return []; }
+                },
                 params: {
                     type: Object,
                     value: function () {
@@ -379,6 +381,7 @@
                 this.keywordFilter = "";
                 this.keywordFilterTitle = "";
                 this.searchTerm = "";
+                this.requiredFieldsForNew = [];
 
                 //Merge in the the block configuration object specified as an attribute.
                 //The reason we do it like this rather than passing in the individual attributes is that some attributes may not be be specified
@@ -488,6 +491,10 @@
             //that particular column should have the 'edit' attribute specified.
             _showEdit: function (column, globalEdit) {
                 return (column.edit && globalEdit);
+            },
+
+            _showArray: function(array){
+                if (array.length > 0){ return true; } else { return false; }
             },
 
             _bulkSelectionChanged: function () {
