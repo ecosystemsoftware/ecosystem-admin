@@ -1,68 +1,35 @@
-//This is a view definition, so the top level is always an array, which allows us to have an unlimited number of
-//lists and/or field blocks in the view
 [
-    //Since this is a simple table view though, there is just one object, a list definition...
     {
-        //This is a list
         "type": "list",
-        //Title to appear at the top of the list
         "title": "Widgets",
-        //This will create a + icon link at the top of the list to allow users to create records of this type.
-        //A modal will pop up asking for the following fields in order to create the record.
-        //Be sure to include all required fields, else the database will reject
         "requiredFieldsForNew": [
             {
                 "name": "id",
                 "label": "Widget SKU"
             }
         ],
-        //Once a new record is created, by default we'll go straight to the record view to allow further editing
-        //We need to know which view to use though
         "newRecordLinkView": "widgetRecordDefault",
-        //Show sort icons in the header
         "allowSort": true,
-        //Displays an input field to allow users to filter the list by keywords
-        //The value of this field corresponds to which DB field to search in
         "keywordFilter": "title",
-        //The placeholder text in the keyword input box will read 'Filter by x'. This is x.
         "keywordFilterTitle": "Widget Title",
-        //Show a small image for each line (first column)
-        //Looks for an attribute 'image' or an array of 'images' (uses the first one)
         "showImage": true,
-        //Shows select check boxes at the left of each line
-        //This allows for the activation of any bulk actions
         "allowSelect": true,
-        //User defined bulk actions.  Displays buttons at the top of the list
         "bulkActions": [
             {
-                "label": "Change Description", //Button text
-                "actionFunction": "changeMe", //Name of function to run
-                "confirm": true //Whether to show a confirmation dialogue before running
+                "label": "Change Description",
+                "actionFunction": "changeMe",
+                "confirm": true
             }
         ],
-        //Additional parameters to run on the view.
-        //These are essentially SQL WHERE clauses to add, apart from 'orderBy' and 'limitTo'
-        //For any others, it will simply append a WHERE clause based on the key/value. e.g.,
-        //{ "customer_id" : "=12" }, would append WHERE customer_id = 12
-        //Note that you DO need to include the operator in the value, it isn't assumed -
-        //This way we can use advanced operators to search text and find values in arrays
         "params": {
             "orderBy": "price"
         },
-        //The most important part of the list - the columns that you want to display
-        //An array of objects specifying details of each column
         "dataColumns": [
             {
-                //DB field identifier
                 "name": "id",
-                //Label for the header
                 "label": "SKU",
-                //For linking:
-                //Name of table to link to,
                 "linkTable": "widgets",
-                //Field to use in the URL of the link (probably id),
                 "linkTo": "id",
-                //View to use (is appended as a URL query)
                 "linkView": "widgetRecordDefault"
             },
             {
@@ -72,7 +39,6 @@
             {
                 "name": "description",
                 "label": "Description",
-                //Allow inline editing
                 "edit": {
                     "type": "text"
                 }
@@ -86,19 +52,11 @@
                 "label": "Price"
             }
         ],
-        //Whether to confirm line actions before running
-        "confirmLineActions" : true,
-        //Allows us to specify actions to run on a line.
-        //An array of objects representing actions.
-        //Each action will create a column at the right of the line where icon buttons will be made available to run the action
+        "confirmLineActions": true,
         "actionColumns": [
             {
-                //Label to display in the header for this column
                 "label": "Delete",
-                //Icon to use
                 "icon": "delete",
-                //Function to run (remember to create the function in 'custom-actions.html')
-                //'delete' is a built in function to delete the line, no need to create it manually
                 "actionFunction": "delete"
             }
         ]

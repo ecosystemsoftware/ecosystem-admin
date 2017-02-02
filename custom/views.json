@@ -1,38 +1,34 @@
-// Main list of views tells the admin panel which views are available for which tables and records
-// Views must appear here to appear in the view selector dropdown.
-// The view 'name' attribute is the name of the JSON file containing the view definition
-// The description is the text that appears in the dropdown
 {
-    "widgets": { //Name of the table in the DB
-        "list": [ //For lists. Here there will be 2 views to choose from.
+    "widgets": {
+        "list": [
             {
-                "name": "widgetListDefault", //Name of the JSON file containing the view spec
-                "description": "Default Widget List" //The human-readable name of the view
+                "name": "widgetListDefault",
+                "description": "Default Widget List"
             },
             {
-                "name": "widgetListAlternative", //Name of the JSON file containing the view spec
-                "description": "Alternative Widget List" //The human-readable name of the view
+                "name": "widgetListAlternative",
+                "description": "Alternative Widget List"
             }
         ],
-        "record": [ //and for record drilldowns, just one view to choose from
+        "record": [
             {
                 "name": "widgetRecordDefault",
                 "description": "Default Widget Form"
             }
         ]
     },
-    "bodjits": { //Name of the table in the DB
-        "list": [ //For lists. Here there will be 2 views to choose from.
+    "bodjits": {
+        "list": [
             {
-                "name": "bodjitListDefault", //Name of the JSON file containing the view spec
-                "description": "Default Bodjit List" //The human-readable name of the view
+                "name": "bodjitListDefault",
+                "description": "Default Bodjit List"
             },
             {
-                "name": "bodjitsListAlternative", //Name of the JSON file containing the view spec
-                "description": "Alternative Bodjit List" //The human-readable name of the view
+                "name": "bodjitsListAlternative",
+                "description": "Alternative Bodjit List"
             }
         ],
-        "record": [ //and for record drilldowns, just one view to choose from
+        "record": [
             {
                 "name": "bodjitsRecordDefault",
                 "description": "Default Bodjit Form"

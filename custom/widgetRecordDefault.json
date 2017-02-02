@@ -1,28 +1,15 @@
-//This is a view definition, so the top level is always an array, which allows us to have an unlimited number of
-//lists and/or field blocks in the view
 [
-    //This is a record view with multiple 'field blocks' and an embedded list block.
-    //Field blocks and list blocks are visually separated from each other for clarity,
-    //so use field blocks to group together related fields and give each block a useful title,
-    //like 'Main', 'Financial', 'Web' etc
-    //We start with a field block
     {
-        //Denotes this as a field block, rather than a list
         "type": "fields",
-        //A title for the block
         "title": "Main",
-        //The fields to display in this block
         "fields": [
             {
-                //DB field to reference
                 "name": "id",
-                //Label for the field
                 "label": "SKU"
             },
             {
                 "name": "name",
                 "label": "Name",
-                //Make the field editable with a simple text input field
                 "edit": true
             },
             {
@@ -32,11 +19,9 @@
             }
         ]
     },
-    //Another field block...
     {
         "title": "Financial",
         "type": "fields",
-        //This one will be displayed in a horizontal row (more compact, great for mainly numerical data)
         "isHorizontal": true,
         "fields": [
             {
@@ -49,15 +34,7 @@
             }
         ]
     },
-    //Now things get a little more complex.
-    //This is an embedded list.  You have all the standard list attributes available as for non-embedded lists.
-    //Take a look at the default list JSON file to see all those attributes
     {
-        //This field is VERY IMPORTANT for embedded lists.
-        //It restricts the embedded list to filtering by the current record being shown
-        //So, say we are embedding a list of of linked bodjits - we only want to see the ones linked to this
-        //widget.  We know that on the 'linkedbodjit' list we are embedding, the widget that the bodjit is linked to is referenced
-        //as 'widget_id', so we put that in the 'restrictField'
         "restrictField": "widget_id",
         "type": "list",
         "table": "linkedbodjits",
@@ -73,7 +50,6 @@
             }
         ],
         "actionColumns": [
-            //We'll provide a button to delete this line
             {
                 "label": "Remove from this widget",
                 "icon": "delete",
