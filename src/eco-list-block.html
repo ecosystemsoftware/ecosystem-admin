@@ -121,8 +121,6 @@
 
         </style>
 
-
-
 <!--Ajax request for the rows in the grid _getParams(where, orderBy, limit, desc)-->
 <iron-ajax headers="[[ _getJWT(jwt) ]]" auto id="listRequest" method="GET" params="[[ params ]]" url="[[ apiRoot ]]/[[ schema ]]/[[ table ]]"
     handle-as="json" last-response="{{ rows }}" debounce-duration="300"></iron-ajax>
@@ -437,11 +435,11 @@
             },
 
             _newRecordCreated: function (e) {
-                //TODO: this takes us out of the SPA
-                location.assign("/view/" + this.table + "/" + e.detail.__data__.response.id + "?view=" + this.newRecordLinkView);
+                window.location = ("/admin/view/" + this.schema + "/" + this.table + "/" + e.detail.__data__.response.id + "?view=" + this.newRecordLinkView);
             },
 
             _newRecordNotCreated: function (e) {
+                //TODO: proper warning
                 console.log(e);
             },
 
