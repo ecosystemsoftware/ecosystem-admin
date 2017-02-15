@@ -21,10 +21,8 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <!--eco components-->
 <link rel="import" href="eco-behaviors.html">
-<!--custom components-->
-<link rel="import" href="../custom/custom-styles.html">
-<link rel="import" href="../custom/custom-actions.html">
-<link rel="import" href="../custom/custom-settings.html">
+<!--Set up the bundle imports-->
+<link rel="import" href="eco-bundle-imports.html">
 
 <dom-module id="eco-login-form">
 
@@ -83,7 +81,7 @@
 
     <div id="loginBox">
 
-        <img id="logo" src="/images/logo-horizontal.png" />
+        <img id="logo" src="[[ logos.horizontal ]]" />
 
         <div id="blurb">
             In order to log on, you need to request a temporary, 6-character passcode to be sent your email address. Once you have this
@@ -118,7 +116,7 @@
     Polymer({
         is: 'eco-login-form',
 
-        behaviors: [EcoBehaviors.ApiBehavior, EcoCustom.Settings],
+        behaviors: [EcoBehaviors.ApiBehavior, EcoCustom.Properties],
 
         properties: {
             jwt: {

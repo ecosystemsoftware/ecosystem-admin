@@ -41,10 +41,9 @@
 <link rel="import" href="eco-view.html">
 <link rel="import" href="eco-404.html">
 <link rel="import" href="eco-behaviors.html">
-<!--custom components-->
-<link rel="import" href="../custom/custom-styles.html">
-<link rel="import" href="../custom/custom-actions.html">
-<link rel="import" href="../custom/custom-settings.html">
+<!--Set up the bundle imports-->
+<link rel="import" href="eco-bundle-imports.html">
+
 
 <dom-module id="eco-admin-app">
 
@@ -108,7 +107,7 @@
 
 <!-- App location and routing -->
 <app-location route="{{route}}"></app-location>
-<app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
+<app-route route="{{route}}" pattern="/admin/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
 
 <!-- Local storage for JWT -->
 <iron-localstorage use-raw name="token" value="{{jwt}}"></iron-localstorage>
@@ -131,13 +130,13 @@ which will immidiately hide the login-form component and activate the main app--
         <app-drawer>
 
             <div id="sidebarLogoContainer">
-                <img id="sidebarLogo" src="/images/logo-vertical.png" />
+                <img id="sidebarLogo" src="[[ logos.vertical ]]" />
                 <h2>{{ adminPanelTitle }}</h2>
             </div>
 
             <iron-selector class="drawer-list" role="navigation">
                 <template is="dom-repeat" items="[[ sideMenu ]]" as="menuItem">
-                    <a href="/view/{{ menuItem.table }}?view={{ menuItem.view }}">{{ menuItem.title }}</a>
+                    <a href="/admin/view/{{ menuItem.schema }}/{{ menuItem.table }}?view={{ menuItem.view }}">{{ menuItem.title }}</a>
                 </template>
             </iron-selector>
 
@@ -150,7 +149,7 @@ which will immidiately hide the login-form component and activate the main app--
                 <app-toolbar>
                     <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
                     <div main-title>
-                        <img id="mainLogo" src="/images/logo-horizontal.png" />
+                        <img id="mainLogo" src="[[ logos.horizontal ]]" />
                     </div>
                     <paper-button on-tap="_logout">Log Out</paper-button>
                     <paper-icon-button icon="arrow-back" on-tap="_goBack"></paper-icon-button>
@@ -181,7 +180,7 @@ which will immidiately hide the login-form component and activate the main app--
 
         is: 'eco-admin-app',
 
-        behaviors: [EcoBehaviors.ApiBehavior, EcoCustom.Settings],
+        behaviors: [EcoBehaviors.ApiBehavior, EcoCustom.Properties],
 
         properties: {
             route: {

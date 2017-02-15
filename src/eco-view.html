@@ -28,10 +28,8 @@
 <link rel="import" href="eco-list-block.html">
 <link rel="import" href="eco-field-block.html">
 <link rel="import" href="eco-behaviors.html">
-<!--custom components-->
-<link rel="import" href="../custom/custom-styles.html">
-<link rel="import" href="../custom/custom-actions.html">
-<link rel="import" href="../custom/custom-settings.html">
+<!--Set up the bundle imports-->
+<link rel="import" href="eco-bundle-imports.html">
 
 <dom-module id="eco-view">
     <template>
@@ -43,35 +41,37 @@
 		- Change the param part of the URL when the view changes-->
 
 	<!--Ajax request for the view specification-->
-	<iron-ajax auto id="viewBlocksRequest" method="GET" url="/custom/[[ queries.view ]].json"
+	<iron-ajax auto id="viewBlocksRequest" method="GET" url="/bundles/[[ schemaData.id ]]/[[ queries.view ]].json"
 	handle-as="json" last-response="{{ viewBlocks }}"></iron-ajax>
 
 	<!--Ajax request for the views list-->
-	<iron-ajax auto id="viewListRequest" method="GET" url="/custom/views.json"
+	<iron-ajax auto id="viewListRequest" method="GET" url="/views"
     handle-as="json" last-response="{{ viewsAvailable }}"></iron-ajax>
 
 	 <!--Ajax request for the record-->
-    <iron-ajax id="recordRequest" headers="[[ _getJWT(jwt) ]]" url="[[ apiRoot ]]/[[ tableData.id ]]/[[ recordData.id ]]" handle-as="json" last-response="{{record}}" debounce-duration="300"></iron-ajax>
+    <iron-ajax id="recordRequest" headers="[[ _getJWT(jwt) ]]" url="[[ apiRoot ]]/[[ schemaData.id ]]/[[ tableData.id ]]/[[ recordData.id ]]" handle-as="json" last-response="{{record}}" debounce-duration="300"></iron-ajax>
 
 	<!--Ajax request for actions-->
     <iron-ajax headers="[[ _getJWT(jwt) ]]" id="actionRequest" handle-as="json" content-type="application/json"></iron-ajax>
 
-	<!--Ajax request for actions-->
-    <iron-ajax headers="[[ _getJWT(jwt) ]]" id="actionRequest" handle-as="json" content-type="application/json"></iron-ajax>
-
-	<app-route
-		route="{{route}}"
-		pattern="/:id"
-		data="{{tableData}}"
-		tail="{{subroute}}"
-		query-params="{{ queries }}">
-	</app-route>
+    <app-route route="{{route}}"
+        pattern="/:id"
+        data="{{schemaData}}"
+        tail="{{subroute}}"
+        query-params="{{ queries }}">
+    </app-route>
 
 	<app-route
 		route="{{subroute}}"
 		pattern="/:id"
-		data="{{recordData}}">
+		data="{{tableData}}"
+		tail="{{subsubroute}}">
 	</app-route>
+
+	<app-route
+		route="{{subsubroute}}">
+	</app-route>
+
 
 	<app-toolbar>
 		<!--Global edit toggle-->
@@ -83,7 +83,7 @@
 
 	<!--View selection box-->
 	<vaadin-combo-box label="Choose a view" value="{{ queries.view }}" item-label-path="description" item-value-path="name"
-	items="[[ _getAvailableViewsForThisTable(viewsAvailable, subroute.path) ]]"></vaadin-combo-box>
+	items="[[ _getAvailableViewsForThisTable(viewsAvailable, schemaData, tableData, recordData) ]]"></vaadin-combo-box>
 
 	</app-toolbar>
 
@@ -101,6 +101,7 @@
 		      <eco-list-block
 				jwt="[[ jwt ]]"
 				global-allow-edit='[[ globalAllowEdit ]]'
+                schema="[[ _getSchema(schemaData.id, block) ]]"
 				table="[[ _getTable(tableData.id, block) ]]"
 				restrict-record="[[ recordData.id ]]"
 				block-config="[[ block ]]"
@@ -125,7 +126,7 @@
         Polymer({
             is: 'eco-view',
 
-            behaviors: [EcoBehaviors.ApiBehavior, EcoCustom.Settings, EcoCustom.Actions],
+            behaviors: [EcoBehaviors.ApiBehavior, EcoCustom.Properties, EcoCustom.Actions],
 
             properties: {
                 route: {
@@ -136,8 +137,18 @@
                     value: false,
                     notify: true
                 },
+                schemaData: Object,
                 tableData: Object,
-                recordData: Object,
+                //This is a very important work around!
+                //We cannot use app-route to get the recordData in the usual way
+                //as it doesn't 'reset' if there is no subsubroute (not a record page)
+                //this means that when coming back form a record page to a list, the recordData
+                //stays in memory - which we don't want.
+                //So, this is like a mini custom app-route that does reset
+                recordData: {
+                    type: Object,
+                    computed: '_getRecordId(subsubroute)'
+                },
                 viewBlocks: {
                     type: Array
                 },
@@ -158,8 +169,20 @@
             },
 
             observers: [
-                '_recordChanged(recordData.id)'
+                '_recordChanged(recordData.id)',
             ],
+
+            //This is a very important work around!
+            // Will actually return null if there is no record id in the path
+            _getRecordId: function(subsubroute){
+                recordId = subsubroute.path.split("/");
+                if (recordId) {
+                    return { "id": recordId[1] };
+                } else {
+                    return {"id": null}
+                }
+                
+            },
 
             _errorLoadingViewBlocks: function() {
                 if (this.queries.view) {
@@ -204,9 +227,9 @@
             // Retrieves the list of possible views for this table from the JSON configuration object loaded.
             // Important: function should accepct viewAvailable object as argument, so that when AJAX call refreshes the list, this function is run
             // Important: function should accept tableId as argument, so that when it changes due to a URL chage, the function is run
-            _getAvailableViewsForThisTable: function(viewsAvailable, p) {
-                var thisViewsAvailable = viewsAvailable[this.tableData.id];
-                if (p && thisViewsAvailable) {
+            _getAvailableViewsForThisTable: function(viewsAvailable, schema, table, record) {
+                var thisViewsAvailable = viewsAvailable[schema.id][table.id];
+                if (record.id && thisViewsAvailable) {
                     return thisViewsAvailable.record;
                 } else if (thisViewsAvailable) {
                     return thisViewsAvailable.list;
@@ -217,7 +240,7 @@
 
             _updateRecord: function(e) {
                 this.$.actionRequest.method = "PATCH";
-                this.$.actionRequest.url = this.apiRoot + "/" + this._getTable(this.tableData.id, {}) + "/" + this.recordData.id;
+                this.$.actionRequest.url = this.apiRoot + "/" + this.schemaData.id + "/" + this.tableData.id + "/" + this.recordData.id;
                 postBody = {};
                 postBody[e.detail.fieldUpdated] = e.detail.newValue;
                 this.$.actionRequest.body = postBody;
@@ -234,6 +257,8 @@
             _getTable: function(tableId, block) {
                 return block.table || tableId
             },
+
+            _getSchema: function (schemaId, block) { return block.schema || schemaId },
 
             // _queriesChanged: function(q) {
             // 	this.set('queries', this.queries);

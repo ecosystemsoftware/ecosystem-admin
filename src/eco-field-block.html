@@ -26,10 +26,8 @@
 <!--eco components-->
 <link rel="import" href="eco-list-block.html">
 <link rel="import" href="eco-behaviors.html">
-<!--custom components-->
-<link rel="import" href="../custom/custom-styles.html">
-<link rel="import" href="../custom/custom-actions.html">
-<link rel="import" href="../custom/custom-settings.html">
+<!--Set up the bundle imports-->
+<link rel="import" href="eco-bundle-imports.html">
 
 <dom-module id="eco-field-block">
 
@@ -115,7 +113,7 @@
 
         is: 'eco-field-block',
 
-        behaviors: [EcoBehaviors.ApiBehavior, EcoCustom.Settings, EcoCustom.Actions],
+        behaviors: [EcoBehaviors.ApiBehavior, EcoCustom.Properties, EcoCustom.Actions],
 
         properties: {
             model: {

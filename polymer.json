@@ -6,11 +6,11 @@
     "src/eco-field-block.html",
     "src/eco-list-block.html",
     "src/eco-login-form.html",
-    "src/eco-view.html"
+    "src/eco-view.html",
+    "src/eco-bundle-imports"
   ],
   "sourceGlobs": [
    "src/**/*",
-   "custom/*",
    "images/**/*",
    "bower.json"
   ],
