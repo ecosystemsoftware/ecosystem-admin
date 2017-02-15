@@ -38,7 +38,11 @@
 		</style>
 
 		<!--TODO:
-		- Change the param part of the URL when the view changes-->
+		- Change the param part of the URL when the view changes
+        - Stop the XHR calls when view is initialised with any path
+        -->
+
+
 
 	<!--Ajax request for the view specification-->
 	<iron-ajax auto id="viewBlocksRequest" method="GET" url="/bundles/[[ schemaData.id ]]/[[ queries.view ]].json"
@@ -174,14 +178,14 @@
 
             //This is a very important work around!
             // Will actually return null if there is no record id in the path
+            // or there is no subsubroute yet
             _getRecordId: function(subsubroute){
-                recordId = subsubroute.path.split("/");
-                if (recordId) {
-                    return { "id": recordId[1] };
+                if (subsubroute.path) {
+                    recordId = subsubroute.path.split("/"); 
+                    if (recordId) { return { "id": recordId[1] }; } else { return { "id": null } }
                 } else {
-                    return {"id": null}
+                    return { "id": null }
                 }
-                
             },
 
             _errorLoadingViewBlocks: function() {
