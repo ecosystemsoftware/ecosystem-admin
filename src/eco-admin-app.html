@@ -42,7 +42,7 @@
 <link rel="import" href="eco-404.html">
 <link rel="import" href="eco-behaviors.html">
 <!--Set up the bundle imports-->
-<link rel="import" href="eco-bundle-imports.html">
+<!--<link rel="import" href="../../admin-imports.html">-->
 
 
 <dom-module id="eco-admin-app">
@@ -50,44 +50,43 @@
     <template>
 
         <style include="custom-styles">
-    
             :host {
-            display: block;
+                display: block;
             }
-
+            
             app-header {
                 color: #fff;
                 background-color: var(--secondary-color);
             }
-
+            
             app-header paper-icon-button {
                 --paper-icon-button-ink-color: white;
             }
-
+            
             app-drawer {
-            --app-drawer-content-container: {
-                background-color: var(--sidebar-color);
-            } 
+                --app-drawer-content-container: {
+                    background-color: var(--sidebar-color);
+                }
             }
-
-            #sidebarLogoContainer{
+            
+            #sidebarLogoContainer {
                 text-align: center;
             }
-
+            
             #sidebarLogo {
                 max-width: 100%;
                 max-height: 120px;
                 padding: 2em;
             }
-
+            
             #mainLogo {
                 max-height: 30px;
             }
-
+            
             .drawer-list {
                 margin: 0 20px;
             }
-
+            
             .drawer-list a {
                 display: block;
                 padding: 0 16px;
@@ -95,144 +94,165 @@
                 color: var(--primary-text-color);
                 font-size: 1.3rem;
                 line-height: 2.2rem;
-
             }
-
+            
             .drawer-list a.iron-selected {
                 color: var(--primary-text-color);
                 font-weight: bold;
             }
-
         </style>
 
-<!-- App location and routing -->
-<app-location route="{{route}}"></app-location>
-<app-route route="{{route}}" pattern="/admin/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
+        <!--Ajax request for the menu list-->
+        <iron-ajax auto id="menuListRequest" method="GET" url="/menu" handle-as="json" last-response="{{ menusAvailable }}"></iron-ajax>
 
-<!-- Local storage for JWT -->
-<iron-localstorage use-raw name="token" value="{{jwt}}"></iron-localstorage>
+        <!-- App location and routing -->
+        <app-location route="{{route}}"></app-location>
+        <app-route route="{{route}}" pattern="/admin/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
 
-<!--Ajax request for config lists -->
-<iron-ajax method="GET" id="configRequest" headers="[[ _getJWT(jwt) ]]" handle-as="json"></iron-ajax>
+        <!-- Local storage for JWT -->
+        <iron-localstorage use-raw name="token" value="{{jwt}}"></iron-localstorage>
 
-<!--Display the login form if there is no JWT in local storage -->
-<template is="dom-if" if="[[ !jwt]]">
-    <eco-login-form jwt="{{ jwt }}"></eco-login-form>
-</template>
+        <!--Ajax request for config lists -->
+        <iron-ajax method="GET" id="configRequest" headers="[[ _getJWT(jwt) ]]" handle-as="json"></iron-ajax>
 
-<!--Otherwise display the main app
+        <!--Display the login form if there is no JWT in local storage -->
+        <template is="dom-if" if="[[ !jwt]]">
+            <eco-login-form jwt="{{ jwt }}"></eco-login-form>
+        </template>
+
+        <!--Otherwise display the main app
 Note that the effect of logging on is to set a JWT under 'token' in local storage 
 which will immidiately hide the login-form component and activate the main app-->
-<template is="dom-if" if="[[ jwt ]]">
+        <template is="dom-if" if="[[ jwt ]]">
 
-    <app-drawer-layout fullbleed responsive-width="1000px">
-        <!-- Drawer content -->
-        <app-drawer>
+            <app-drawer-layout fullbleed responsive-width="1000px">
+                <!-- Drawer content -->
+                <app-drawer>
 
-            <div id="sidebarLogoContainer">
-                <img id="sidebarLogo" src="[[ logos.vertical ]]" />
-                <h2>{{ adminPanelTitle }}</h2>
-            </div>
-
-            <iron-selector class="drawer-list" role="navigation">
-                <template is="dom-repeat" items="[[ sideMenu ]]" as="menuItem">
-                    <a href="/admin/view/{{ menuItem.schema }}/{{ menuItem.table }}?view={{ menuItem.view }}">{{ menuItem.title }}</a>
-                </template>
-            </iron-selector>
-
-        </app-drawer>
-
-        <!-- Main content -->
-        <app-header-layout has-scrolling-region>
-
-            <app-header fixed condenses effects="waterfall">
-                <app-toolbar>
-                    <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-                    <div main-title>
-                        <img id="mainLogo" src="[[ logos.horizontal ]]" />
+                    <div id="sidebarLogoContainer">
+                        <img id="sidebarLogo" src="[[ logos.vertical ]]" />
+                        <h2>{{ adminPanelTitle }}</h2>
                     </div>
-                    <paper-button on-tap="_logout">Log Out</paper-button>
-                    <paper-icon-button icon="arrow-back" on-tap="_goBack"></paper-icon-button>
-                </app-toolbar>
-            </app-header>
 
-            <iron-pages selected="[[ routeData.page ]]" attr-for-selected="name" fallback-selection="eco-404" role="main">
+                    <iron-selector class="drawer-list" role="navigation">
+                        <template is="dom-repeat" items="[[ bundlesInstalled ]]" as="bundle">
+                            <h2>[[ _getBundleMenuTitle(bundle, menusAvailable) ]]</h2>
+                            <template is="dom-repeat" items="[[ _getBundleMenuItems(bundle, menusAvailable) ]]" as="menuItem">
+                                <a href="/admin/view/{{ menuItem.schema }}/{{ menuItem.table }}?view={{ menuItem.view }}">{{ menuItem.title }}</a>
+                            </template>
+                        </template>
+                    </iron-selector>
 
-                <eco-view name="view" jwt="[[ jwt ]]" route="[[ subroute ]]" config="[[ config ]]"></eco-view>
-                <div name="">
-                    <h1>Welcome to EcoSystem</h1>
-                    <h2>Use the menu on the left to get started</h2>
-                </div>
-                <eco-404 name="eco-404"></eco-404>
+                </app-drawer>
 
-            </iron-pages>
+                <!-- Main content -->
+                <app-header-layout has-scrolling-region>
 
-        </app-header-layout>
+                    <app-header fixed condenses effects="waterfall">
+                        <app-toolbar>
+                            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+                            <div main-title>
+                                <img id="mainLogo" src="[[ logos.horizontal ]]" />
+                            </div>
+                            <paper-button on-tap="_logout">Log Out</paper-button>
+                            <paper-icon-button icon="arrow-back" on-tap="_goBack"></paper-icon-button>
+                        </app-toolbar>
+                    </app-header>
 
-    </app-drawer-layout>
+                    <iron-pages selected="[[ routeData.page ]]" attr-for-selected="name" fallback-selection="eco-404" role="main">
 
-</template>
+                        <eco-view name="view" jwt="[[ jwt ]]" route="[[ subroute ]]" config="[[ config ]]"></eco-view>
+                        <div name="">
+                            <h1>Welcome to EcoSystem</h1>
+                            <h2>Use the menu on the left to get started</h2>
+                        </div>
+                        <eco-404 name="eco-404"></eco-404>
 
-</template>
+                    </iron-pages>
 
-<script>
-    Polymer({
+                </app-header-layout>
 
-        is: 'eco-admin-app',
+            </app-drawer-layout>
 
-        behaviors: [EcoBehaviors.ApiBehavior, EcoCustom.Properties],
+        </template>
 
-        properties: {
-            route: {
-                type: Object
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'eco-admin-app',
+
+            behaviors: [EcoBehaviors.ApiBehavior, EcoCustom.Properties],
+
+            properties: {
+                route: {
+                    type: Object
+                },
+                routeData: {
+                    type: Object
+                },
+                config: {
+                    type: Object,
+                    value: function () {
+                        return {};
+                    }
+                }
             },
-            routeData: {
-                type: Object
+
+            listeners: {
+                'updateConfig': '_updateConfig',
+                'configRequest.response': '_configUpdated'
             },
-            config: {
-                type: Object,
-                value: function () {
-                    return {};
+
+            _goBack: function () {
+                window.history.back();
+            },
+
+            _showPage404: function () {
+                this.page = 'eco-404';
+            },
+
+            _logout: function () {
+                var r = confirm("Are you sure you want to log out?");
+                if (r == true) {
+                    this.set('jwt', null);
+                }
+            },
+
+            _updateConfig: function (e) {
+                this.$.configRequest.url = this.apiRoot + "/" + e.detail.table
+                this.$.configRequest.generateRequest();
+            },
+
+            _configUpdated: function (e) {
+                //Once the config list has come in, we set it on the 'config' object.
+                //It is then always available to views downstream
+                //The response is on e.detail.__data__.response, but there is no obvious simple way to retrieve the name of the table that was requesteed
+                //so we parse it out from the URL which IS available on e.detail.__data__.xhr.responseURL
+                var URLwas = e.detail.__data__.xhr.responseURL;
+                var n = URLwas.lastIndexOf("/");
+                var path = 'config.' + URLwas.substring(n + 1, URLwas.length);
+                this.set(path, e.detail.__data__.response);
+            },
+
+            _getBundleMenuItems: function (bundle, menus) {
+                if (menus[bundle]){
+                    return menus[bundle].items;
+                } else {
+                    return [];
+                } 
+                
+            },
+
+            _getBundleMenuTitle: function (bundle, menus) {
+                if (menus[bundle]) {
+                    return menus[bundle].title;
+                } else {
+                    return "";
                 }
             }
-        },
 
-        listeners: {
-            'updateConfig': '_updateConfig',
-            'configRequest.response': '_configUpdated'
-        },
-
-        _goBack: function () {
-            window.history.back();
-        },
-
-        _showPage404: function () {
-            this.page = 'eco-404';
-        },
-
-        _logout: function () {
-            var r = confirm("Are you sure you want to log out?");
-            if (r == true) {
-                this.set('jwt', null);
-            }
-        },
-
-        _updateConfig: function (e) {
-            this.$.configRequest.url = this.apiRoot + "/" + e.detail.table
-            this.$.configRequest.generateRequest();
-        },
-
-        _configUpdated: function (e) {
-            //Once the config list has come in, we set it on the 'config' object.
-            //It is then always available to views downstream
-            //The response is on e.detail.__data__.response, but there is no obvious simple way to retrieve the name of the table that was requesteed
-            //so we parse it out from the URL which IS available on e.detail.__data__.xhr.responseURL
-            var URLwas = e.detail.__data__.xhr.responseURL;
-            var n = URLwas.lastIndexOf("/");
-            var path = 'config.' + URLwas.substring(n + 1, URLwas.length);
-            this.set(path, e.detail.__data__.response);
-        }
-
-    });
-</script>
+        });
+    </script>
 </dom-module>

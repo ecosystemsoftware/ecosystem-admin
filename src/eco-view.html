@@ -29,7 +29,7 @@
 <link rel="import" href="eco-field-block.html">
 <link rel="import" href="eco-behaviors.html">
 <!--Set up the bundle imports-->
-<link rel="import" href="eco-bundle-imports.html">
+<!--<link rel="import" href="../../admin-imports.html">-->
 
 <dom-module id="eco-view">
     <template>
@@ -232,6 +232,7 @@
             // Important: function should accepct viewAvailable object as argument, so that when AJAX call refreshes the list, this function is run
             // Important: function should accept tableId as argument, so that when it changes due to a URL chage, the function is run
             _getAvailableViewsForThisTable: function(viewsAvailable, schema, table, record) {
+                //TODO: returns an error until the viewsavailable come back
                 var thisViewsAvailable = viewsAvailable[schema.id][table.id];
                 if (record.id && thisViewsAvailable) {
                     return thisViewsAvailable.record;

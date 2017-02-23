@@ -1,16 +1,8 @@
 {
   "entrypoint": "index.html",
   "shell": "src/eco-admin-app.html",
-  "fragments": [
-    "src/eco-404.html",
-    "src/eco-field-block.html",
-    "src/eco-list-block.html",
-    "src/eco-login-form.html",
-    "src/eco-view.html",
-    "src/eco-bundle-imports"
-  ],
   "sourceGlobs": [
-   "src/**/*",
+   "src/*",
    "images/**/*",
    "bower.json"
   ],
