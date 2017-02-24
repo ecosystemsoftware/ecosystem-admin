@@ -29,7 +29,6 @@
 
 
 
-
 </head><body><div hidden="" by-vulcanize=""><script>!function(){function e(){document.body.removeAttribute("unresolved")}window.WebComponents?addEventListener("WebComponentsReady",e):"interactive"===document.readyState||"complete"===document.readyState?e():addEventListener("DOMContentLoaded",e)}(),window.Polymer={Settings:function(){var e=window.Polymer||{};if(!e.noUrlSettings)for(var t,r=location.search.slice(1).split("&"),i=0;i<r.length&&(t=r[i]);i++)t=t.split("="),t[0]&&(e[t[0]]=t[1]||!0);return e.wantShadow="shadow"===e.dom,e.hasShadow=Boolean(Element.prototype.createShadowRoot),e.nativeShadow=e.hasShadow&&!window.ShadowDOMPolyfill,e.useShadow=e.wantShadow&&e.hasShadow,e.hasNativeImports=Boolean("import"in document.createElement("link")),e.useNativeImports=e.hasNativeImports,e.useNativeCustomElements=!window.CustomElements||window.CustomElements.useNative,e.useNativeShadow=e.useShadow&&e.nativeShadow,e.usePolyfillProto=!e.useNativeCustomElements&&!Object.__proto__,e.hasNativeCSSProperties=!navigator.userAgent.match("AppleWebKit/601")&&window.CSS&&CSS.supports&&CSS.supports("box-shadow","0 0 0 var(--foo)"),e.useNativeCSSProperties=e.hasNativeCSSProperties&&e.lazyRegister&&e.useNativeCSSProperties,e}()},function(){var e=window.Polymer;window.Polymer=function(e){"function"==typeof e&&(e=e.prototype),e||(e={});var r=t(e);e=r.prototype;var i={prototype:e};return e.extends&&(i.extends=e.extends),Polymer.telemetry._registrate(e),document.registerElement(e.is,i),r};var t=function(e){var t=Polymer.Base;return e.extends&&(t=Polymer.Base._getExtendedPrototype(e.extends)),e=Polymer.Base.chainObject(e,t),e.registerCallback(),e.constructor};if(e)for(var r in e)Polymer[r]=e[r];Polymer.Class=t}(),Polymer.telemetry={registrations:[],_regLog:function(e){console.log("["+e.is+"]: registered")},_registrate:function(e){this.registrations.push(e),Polymer.log&&this._regLog(e)},dumpRegistrations:function(){this.registrations.forEach(this._regLog)}},Object.defineProperty(window,"currentImport",{enumerable:!0,configurable:!0,get:function(){return(document._currentScript||document.currentScript).ownerDocument}}),Polymer.RenderStatus={_ready:!1,_callbacks:[],whenReady:function(e){this._ready?e():this._callbacks.push(e)},_makeReady:function(){this._ready=!0;for(var e=0;e<this._callbacks.length;e++)this._callbacks[e]();this._callbacks=[]},_catchFirstRender:function(){requestAnimationFrame(function(){Polymer.RenderStatus._makeReady()})},_afterNextRenderQueue:[],_waitingNextRender:!1,afterNextRender:function(e,t,r){this._watchNextRender(),this._afterNextRenderQueue.push([e,t,r])},hasRendered:function(){return this._ready},_watchNextRender:function(){if(!this._waitingNextRender){this._waitingNextRender=!0;var e=function(){Polymer.RenderStatus._flushNextRender()};this._ready?requestAnimationFrame(e):this.whenReady(e)}},_flushNextRender:function(){var e=this;setTimeout(function(){e._flushRenderCallbacks(e._afterNextRenderQueue),e._afterNextRenderQueue=[],e._waitingNextRender=!1})},_flushRenderCallbacks:function(e){for(var t,r=0;r<e.length;r++)t=e[r],t[1].apply(t[0],t[2]||Polymer.nar)}},window.HTMLImports?HTMLImports.whenReady(function(){Polymer.RenderStatus._catchFirstRender()}):Polymer.RenderStatus._catchFirstRender(),Polymer.ImportStatus=Polymer.RenderStatus,Polymer.ImportStatus.whenLoaded=Polymer.ImportStatus.whenReady,function(){"use strict";var e=Polymer.Settings;Polymer.Base={__isPolymerInstance__:!0,_addFeature:function(e){this.extend(this,e)},registerCallback:function(){"max"===e.lazyRegister?this.beforeRegister&&this.beforeRegister():(this._desugarBehaviors(),this._doBehavior("beforeRegister")),this._registerFeatures(),e.lazyRegister||this.ensureRegisterFinished()},createdCallback:function(){this.__hasRegisterFinished||this._ensureRegisterFinished(this.__proto__),Polymer.telemetry.instanceCount++,this.root=this,this._doBehavior("created"),this._initFeatures()},ensureRegisterFinished:function(){this._ensureRegisterFinished(this)},_ensureRegisterFinished:function(t){t.__hasRegisterFinished===t.is&&t.is||("max"===e.lazyRegister&&(t._desugarBehaviors(),t._doBehaviorOnly("beforeRegister")),t.__hasRegisterFinished=t.is,t._finishRegisterFeatures&&t._finishRegisterFeatures(),t._doBehavior("registered"),e.usePolyfillProto&&t!==this&&t.extend(this,t))},attachedCallback:function(){var e=this;Polymer.RenderStatus.whenReady(function(){e.isAttached=!0,e._doBehavior("attached")})},detachedCallback:function(){var e=this;Polymer.RenderStatus.whenReady(function(){e.isAttached=!1,e._doBehavior("detached")})},attributeChangedCallback:function(e,t,r){this._attributeChangedImpl(e),this._doBehavior("attributeChanged",[e,t,r])},_attributeChangedImpl:function(e){this._setAttributeToProperty(this,e)},extend:function(e,t){if(e&&t)for(var r,i=Object.getOwnPropertyNames(t),o=0;o<i.length&&(r=i[o]);o++)this.copyOwnProperty(r,t,e);return e||t},mixin:function(e,t){for(var r in t)e[r]=t[r];return e},copyOwnProperty:function(e,t,r){var i=Object.getOwnPropertyDescriptor(t,e);i&&Object.defineProperty(r,e,i)},_logger:function(e,t){switch(1===t.length&&Array.isArray(t[0])&&(t=t[0]),e){case"log":case"warn":case"error":console[e].apply(console,t)}},_log:function(){var e=Array.prototype.slice.call(arguments,0);this._logger("log",e)},_warn:function(){var e=Array.prototype.slice.call(arguments,0);this._logger("warn",e)},_error:function(){var e=Array.prototype.slice.call(arguments,0);this._logger("error",e)},_logf:function(){return this._logPrefix.concat(this.is).concat(Array.prototype.slice.call(arguments,0))}},Polymer.Base._logPrefix=function(){var e=window.chrome&&!/edge/i.test(navigator.userAgent)||/firefox/i.test(navigator.userAgent);return e?["%c[%s::%s]:","font-weight: bold; background-color:#EEEE00;"]:["[%s::%s]:"]}(),Polymer.Base.chainObject=function(e,t){return e&&t&&e!==t&&(Object.__proto__||(e=Polymer.Base.extend(Object.create(t),e)),e.__proto__=t),e},Polymer.Base=Polymer.Base.chainObject(Polymer.Base,HTMLElement.prototype),window.CustomElements?Polymer.instanceof=CustomElements.instanceof:Polymer.instanceof=function(e,t){return e instanceof t},Polymer.isInstance=function(e){return Boolean(e&&e.__isPolymerInstance__)},Polymer.telemetry.instanceCount=0}(),function(){function e(){if(s)for(var e,t=document._currentScript||document.currentScript,r=t&&t.ownerDocument||document,i=r.querySelectorAll("dom-module"),o=i.length-1;o>=0&&(e=i[o]);o--){if(e.__upgraded__)return;CustomElements.upgrade(e)}}var t={},r={},i=function(e){return t[e]||r[e.toLowerCase()]},o=function(){return document.createElement("dom-module")};o.prototype=Object.create(HTMLElement.prototype),Polymer.Base.extend(o.prototype,{constructor:o,createdCallback:function(){this.register()},register:function(e){e=e||this.id||this.getAttribute("name")||this.getAttribute("is"),e&&(this.id=e,t[e]=this,r[e.toLowerCase()]=this)},import:function(t,r){if(t){var o=i(t);return o||(e(),o=i(t)),o&&r&&(o=o.querySelector(r)),o}}});var s=window.CustomElements&&!CustomElements.useNative;document.registerElement("dom-module",o)}(),Polymer.Base._addFeature({_prepIs:function(){if(!this.is){var e=(document._currentScript||document.currentScript).parentNode;if("dom-module"===e.localName){var t=e.id||e.getAttribute("name")||e.getAttribute("is");this.is=t}}this.is&&(this.is=this.is.toLowerCase())}}),Polymer.Base._addFeature({behaviors:[],_desugarBehaviors:function(){this.behaviors.length&&(this.behaviors=this._desugarSomeBehaviors(this.behaviors))},_desugarSomeBehaviors:function(e){var t=[];e=this._flattenBehaviorsList(e);for(var r=e.length-1;r>=0;r--){var i=e[r];t.indexOf(i)===-1&&(this._mixinBehavior(i),t.unshift(i))}return t},_flattenBehaviorsList:function(e){for(var t=[],r=0;r<e.length;r++){var i=e[r];i instanceof Array?t=t.concat(this._flattenBehaviorsList(i)):i?t.push(i):this._warn(this._logf("_flattenBehaviorsList","behavior is null, check for missing or 404 import"))}return t},_mixinBehavior:function(e){for(var t,r=Object.getOwnPropertyNames(e),i=0;i<r.length&&(t=r[i]);i++)Polymer.Base._behaviorProperties[t]||this.hasOwnProperty(t)||this.copyOwnProperty(t,e,this)},_prepBehaviors:function(){this._prepFlattenedBehaviors(this.behaviors)},_prepFlattenedBehaviors:function(e){for(var t=0,r=e.length;t<r;t++)this._prepBehavior(e[t]);this._prepBehavior(this)},_doBehavior:function(e,t){for(var r=0;r<this.behaviors.length;r++)this._invokeBehavior(this.behaviors[r],e,t);this._invokeBehavior(this,e,t)},_doBehaviorOnly:function(e,t){for(var r=0;r<this.behaviors.length;r++)this._invokeBehavior(this.behaviors[r],e,t)},_invokeBehavior:function(e,t,r){var i=e[t];i&&i.apply(this,r||Polymer.nar)},_marshalBehaviors:function(){for(var e=0;e<this.behaviors.length;e++)this._marshalBehavior(this.behaviors[e]);this._marshalBehavior(this)}}),Polymer.Base._behaviorProperties={hostAttributes:!0,beforeRegister:!0,registered:!0,properties:!0,observers:!0,listeners:!0,created:!0,attached:!0,detached:!0,attributeChanged:!0,ready:!0},Polymer.Base._addFeature({_getExtendedPrototype:function(e){return this._getExtendedNativePrototype(e)},_nativePrototypes:{},_getExtendedNativePrototype:function(e){var t=this._nativePrototypes[e];if(!t){var r=this.getNativePrototype(e);t=this.extend(Object.create(r),Polymer.Base),this._nativePrototypes[e]=t}return t},getNativePrototype:function(e){return Object.getPrototypeOf(document.createElement(e))}}),Polymer.Base._addFeature({_prepConstructor:function(){this._factoryArgs=this.extends?[this.extends,this.is]:[this.is];var e=function(){return this._factory(arguments)};this.hasOwnProperty("extends")&&(e.extends=this.extends),Object.defineProperty(this,"constructor",{value:e,writable:!0,configurable:!0}),e.prototype=this},_factory:function(e){var t=document.createElement.apply(document,this._factoryArgs);return this.factoryImpl&&this.factoryImpl.apply(t,e),t}}),Polymer.nob=Object.create(null),Polymer.Base._addFeature({properties:{},getPropertyInfo:function(e){var t=this._getPropertyInfo(e,this.properties);if(!t)for(var r=0;r<this.behaviors.length;r++)if(t=this._getPropertyInfo(e,this.behaviors[r].properties))return t;return t||Polymer.nob},_getPropertyInfo:function(e,t){var r=t&&t[e];return"function"==typeof r&&(r=t[e]={type:r}),r&&(r.defined=!0),r},_prepPropertyInfo:function(){this._propertyInfo={};for(var e=0;e<this.behaviors.length;e++)this._addPropertyInfo(this._propertyInfo,this.behaviors[e].properties);this._addPropertyInfo(this._propertyInfo,this.properties),this._addPropertyInfo(this._propertyInfo,this._propertyEffects)},_addPropertyInfo:function(e,t){if(t){var r,i;for(var o in t)r=e[o],i=t[o],("_"!==o[0]||i.readOnly)&&(e[o]?(r.type||(r.type=i.type),r.readOnly||(r.readOnly=i.readOnly)):e[o]={type:"function"==typeof i?i:i.type,readOnly:i.readOnly,attribute:Polymer.CaseMap.camelToDashCase(o)})}}}),Polymer.CaseMap={_caseMap:{},_rx:{dashToCamel:/-[a-z]/g,camelToDash:/([A-Z])/g},dashToCamelCase:function(e){return this._caseMap[e]||(this._caseMap[e]=e.indexOf("-")<0?e:e.replace(this._rx.dashToCamel,function(e){return e[1].toUpperCase()}))},camelToDashCase:function(e){return this._caseMap[e]||(this._caseMap[e]=e.replace(this._rx.camelToDash,"-$1").toLowerCase())}},Polymer.Base._addFeature({_addHostAttributes:function(e){this._aggregatedAttributes||(this._aggregatedAttributes={}),e&&this.mixin(this._aggregatedAttributes,e)},_marshalHostAttributes:function(){this._aggregatedAttributes&&this._applyAttributes(this,this._aggregatedAttributes)},_applyAttributes:function(e,t){for(var r in t)if(!this.hasAttribute(r)&&"class"!==r){var i=t[r];this.serializeValueToAttribute(i,r,this)}},_marshalAttributes:function(){this._takeAttributesToModel(this)},_takeAttributesToModel:function(e){if(this.hasAttributes())for(var t in this._propertyInfo){var r=this._propertyInfo[t];this.hasAttribute(r.attribute)&&this._setAttributeToProperty(e,r.attribute,t,r)}},_setAttributeToProperty:function(e,t,r,i){if(!this._serializing&&(r=r||Polymer.CaseMap.dashToCamelCase(t),i=i||this._propertyInfo&&this._propertyInfo[r],i&&!i.readOnly)){var o=this.getAttribute(t);e[r]=this.deserialize(o,i.type)}},_serializing:!1,reflectPropertyToAttribute:function(e,t,r){this._serializing=!0,r=void 0===r?this[e]:r,this.serializeValueToAttribute(r,t||Polymer.CaseMap.camelToDashCase(e)),this._serializing=!1},serializeValueToAttribute:function(e,t,r){var i=this.serialize(e);r=r||this,void 0===i?r.removeAttribute(t):r.setAttribute(t,i)},deserialize:function(e,t){switch(t){case Number:e=Number(e);break;case Boolean:e=null!=e;break;case Object:try{e=JSON.parse(e)}catch(e){}break;case Array:try{e=JSON.parse(e)}catch(t){e=null,console.warn("Polymer::Attributes: couldn`t decode Array as JSON")}break;case Date:e=new Date(e);break;case String:}return e},serialize:function(e){switch(typeof e){case"boolean":return e?"":void 0;case"object":if(e instanceof Date)return e.toString();if(e)try{return JSON.stringify(e)}catch(e){return""}default:return null!=e?e:void 0}}}),Polymer.version="1.7.0",Polymer.Base._addFeature({_registerFeatures:function(){this._prepIs(),this._prepBehaviors(),this._prepConstructor(),this._prepPropertyInfo()},_prepBehavior:function(e){this._addHostAttributes(e.hostAttributes)},_marshalBehavior:function(e){},_initFeatures:function(){this._marshalHostAttributes(),this._marshalBehaviors()}});</script>
 
 
@@ -2522,17 +2521,16 @@ delete this[t])},_configureProperties:function(e,t){for(var n in e){var r=e[n];i
     <template>
 
         <style include="custom-styles">
-
-               #loginContainer {
+            #loginContainer {
                 display: block;
                 position: absolute;
                 top: 0;
                 bottom: 0;
                 left: 0;
                 right: 0;
-                background-color: var(--secondary-color); 
+                background-color: var(--secondary-color);
             }
-
+            
             #loginBox {
                 width: 50%;
                 margin-left: auto;
@@ -2544,65 +2542,64 @@ delete this[t])},_configureProperties:function(e,t){for(var n in e){var r=e[n];i
                 box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
                 padding: 2em;
             }
-
+            
             #logo {
                 width: 100%;
             }
-
+            
             #blurb {
                 margin: 1em;
                 font-size: 120%;
                 text-align: center;
             }
-
+            
             #loginActions {
                 text-align: center;
                 margin: 2em;
             }
-
-             #loginActions paper-button {
+            
+            #loginActions paper-button {
                 --paper-button: {
                     background-color: var(--primary-color);
                     color: white;
                 }
             }
-
         </style>
 
 
-<div id="loginContainer">
+        <div id="loginContainer">
 
-    <div id="loginBox">
+            <div id="loginBox">
 
-        <img id="logo" src="[[ logos.horizontal ]]">
+                <img id="logo" src="[[ logos.horizontal ]]">
 
-        <div id="blurb">
-            In order to log on, you need to request a temporary, 6-character passcode to be sent your email address. Once you have this
-            code, return here and enter the code within 5 minutes, otherwise it will expire. You only need to do this once
-            per machine, or until you decide to log out.
+                <div id="blurb">
+                    In order to log on, you need to request a temporary, 6-character passcode to be sent your email address. Once you have this
+                    code, return here and enter the code within 5 minutes, otherwise it will expire. You only need to do
+                    this once per machine, or until you decide to log out.
+                </div>
+
+                <form is="iron-form" id="requestCodeForm" content-type="application/json" method="post" action="[[ publicApiRoot ]]/magiccode">
+                    <paper-input error-message="Please enter a valid email address" name="email" label="Step 1: Enter email here to request code" type="email" value="{{ email }}" required=""></paper-input>
+                        <paper-button raised="" on-tap="_submitRequestCodeForm">Request Code</paper-button>
+                </form>
+
+                <form is="iron-form" id="loginForm" content-type="application/json" method="post" action="[[ publicApiRoot ]]/login">
+                    <paper-input error-message="Please enter a valid email address" name="username" label="You are logging in with this email address" type="email" value="[[ email ]]" required=""></paper-input>
+                        <paper-input name="password" label="Enter the 6-character code you received here" type="text" minlength="6" error-message="Please enter a valid 6-character code" required=""></paper-input>
+                            <div id="loginActions">
+                                <paper-button raised="" on-tap="_submitLoginForm">Login</paper-button>
+                            </div>
+                </form>
+
+            </div>
+
         </div>
 
-        <form is="iron-form" id="requestCodeForm" content-type="application/json" method="post" action="[[ publicApiRoot ]]/magiccode">
-            <paper-input error-message="Please enter a valid email address" name="email" label="Step 1: Enter email here to request code" type="email" value="{{ email }}" required=""></paper-input>
-            <paper-button raised="" on-tap="_submitRequestCodeForm">Request Code</paper-button>
-        </form>
-
-        <form is="iron-form" id="loginForm" content-type="application/json" method="post" action="[[ publicApiRoot ]]/login">
-            <paper-input error-message="Please enter a valid email address" name="username" label="You are logging in with this email address" type="email" value="[[ email ]]" required=""></paper-input>
-            <paper-input name="password" label="Enter the 6-character code you received here" type="text" minlength="6" error-message="Please enter a valid 6-character code" required=""></paper-input>
-            <div id="loginActions">
-                <paper-button raised="" on-tap="_submitLoginForm">Login</paper-button>
-            </div>
-        </form>
-
-    </div>
-
-</div>
-
-</template>
+    </template>
 
 
-<script>Polymer({is:"eco-login-form",behaviors:[EcoBehaviors.ApiBehavior,EcoCustom.Properties],properties:{jwt:{type:String,reflectToAttribute:!0,notify:!0}},listeners:{"loginForm.iron-form-error":"_loginFailed","loginForm.iron-form-response":"_loginOK","requestCodeForm.iron-form-error":"_codeRequestFailed","requestCodeForm.iron-form-response":"_codeRequestOK"},_submitLoginForm:function(){this.$.loginForm.submit()},_submitRequestCodeForm:function(){this.$.requestCodeForm.submit()},_loginFailed:function(){alert("Login was unsuccessful. Please verify email and password and try again")},_loginOK:function(e){var o=e.detail.__data__.response.token;o?(this.set("jwt",o),alert("Welcome to EcoSystem")):alert("Login was unsuccessful. Please verify email and password and try again")},_codeRequestFailed:function(e){alert("Code request was unsuccessful. Please verify email and password and try again")},_codeRequestOK:function(e){alert("Code requested.  Now go and check your email")}});</script>
+    <script>Polymer({is:"eco-login-form",behaviors:[EcoBehaviors.ApiBehavior,EcoCustom.Properties],properties:{jwt:{type:String,reflectToAttribute:!0,notify:!0}},listeners:{"loginForm.iron-form-error":"_loginFailed","loginForm.iron-form-response":"_loginOK","requestCodeForm.iron-form-error":"_codeRequestFailed","requestCodeForm.iron-form-response":"_codeRequestOK"},_submitLoginForm:function(){this.$.loginForm.submit()},_submitRequestCodeForm:function(){this.$.requestCodeForm.submit()},_loginFailed:function(){alert("Login was unsuccessful. Please verify email and password and try again")},_loginOK:function(e){var o=e.detail.__data__.response.token;o?(this.set("jwt",o),alert("Welcome to EcoSystem")):alert("Login was unsuccessful. Please verify email and password and try again")},_codeRequestFailed:function(e){alert("Code request was unsuccessful. Please verify email and password and try again")},_codeRequestOK:function(e){alert("Code requested.  Now go and check your email")}});</script>
 
 </dom-module><iron-iconset-svg name="editor" size="24">
 <svg><defs>
@@ -3410,7 +3407,6 @@ delete this[t])},_configureProperties:function(e,t){for(var n in e){var r=e[n];i
     <template>
 
         <style include="custom-styles">
-        
             :host {
                 display: block;
                 margin: 0.5em;
@@ -3419,7 +3415,7 @@ delete this[t])},_configureProperties:function(e,t){for(var n in e){var r=e[n];i
                 box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
                 padding: 0.5em;
             }
-
+            
             .title {
                 font-size: 125%;
                 font-weight: bold;
@@ -3428,15 +3424,15 @@ delete this[t])},_configureProperties:function(e,t){for(var n in e){var r=e[n];i
                 padding-bottom: 0.5em;
                 color: var(--primary-text-color);
             }
-
+            
             .content tr {
-               border-bottom: solid 1px black; 
+                border-bottom: solid 1px black;
             }
-
+            
             th.active-ordered paper-icon-button {
                 color: var(--primary-color);
             }
-
+            
             th.active-ordered.desc paper-icon-button {
                 -webkit-transform: rotate(180deg);
                 -moz-transform: rotate(180deg);
@@ -3444,188 +3440,189 @@ delete this[t])},_configureProperties:function(e,t){for(var n in e){var r=e[n];i
                 -ms-transform: rotate(180deg);
                 transform: rotate(180deg);
             }
-
+            
             img.line-image {
                 max-height: 35px;
-                max-width: 50px; 
+                max-width: 50px;
             }
-
+            
             paper-input.cellInput {
                 --paper-input-container: {
                     padding: 0px 0px 0px 0px;
-                };
+                }
+                ;
                 --paper-input-container-underline: {
                     display: none;
-                };
+                }
+                ;
                 --paper-input-container-underline-focus: {
                     display: none;
-                };
+                }
+                ;
                 --paper-input-container-input: {
                     font-size: 100%;
                     color: black;
-                };
+                }
+                ;
             }
-
+            
             .listCell {
-                background-color:#FbFbFb;
-				opacity: 0.8;
+                background-color: #FbFbFb;
+                opacity: 0.8;
                 padding: 0.3em 1em 0.3em 1em;
             }
-
+            
             .listCellContentContainer {
                 overflow: hidden;
                 display: -webkit-box;
                 -webkit-line-clamp: 3;
                 -webkit-box-orient: vertical;
             }
-
+            
             .listCell.cellEdittrue {
                 background-color: #f8f8f8;
                 padding: 0.3em 1em 0.3em 1em;
             }
-
+            
             a {
                 color: var(--primary-color);
             }
-
+            
             paper-icon-button {
                 color: var(--icon-button-color);
             }
-
-
         </style>
 
-
-<iron-ajax headers="[[ _getJWT(jwt) ]]" auto="" id="listRequest" method="GET" params="[[ params ]]" url="[[ apiRoot ]]/[[ schema ]]/[[ table ]]" handle-as="json" last-response="{{ rows }}" debounce-duration="300"></iron-ajax>
-
-<iron-ajax headers="[[ _getJWT(jwt) ]]" id="actionRequest" handle-as="json" content-type="application/json"></iron-ajax>
-
-<iron-ajax method="POST" body="[[ newRecord ]]" url="[[ apiRoot ]]/[[ schema ]]/[[ table ]]" headers="[[ _getJWT(jwt) ]]" id="newRecordRequest" handle-as="json" content-type="application/json"></iron-ajax>
-
-<div class="title">
-    [[ title ]]
-</div>
-
-<template is="dom-if" if="[[ keywordFilter ]]">
-    <paper-input type="text" error-message="Invalid input!" min="3" label="Filter by [[ keywordFilterTitle ]]" value="{{ searchTerm }}">
-        <iron-icon prefix="" icon="search"></iron-icon>
-    </paper-input>
-</template>
-
-
-<paper-dialog id="newDialog">
-    <h2>Add New Entry to [[ title ]]</h2>
-    <p>
-        Enter the following required fields in order to create a new record.
-    </p>
-    <p>
-        <template is="dom-repeat" items="[[ requiredFieldsForNew ]]" as="requiredField">
-            <paper-input type="text" label="[[ requiredField.label ]]" on-change="_newRecordFieldChanged"></paper-input>
-        </template>
-        <paper-button raised="" on-tap="_createNew">Add</paper-button>
-    </p>
-
-</paper-dialog>
-
-<span hidden$="[[ !_showArray(requiredFieldsForNew) ]]"><paper-icon-button icon="add-circle" on-tap="_showNewDialog"></paper-icon-button></span>
-
-
-<template is="dom-repeat" items="[[ bulkActions ]]" as="action">
-    <paper-button raised="" disabled$="[[ !numberOfLinesSelected ]]" on-tap="_runBulkAction">[[ action.label ]]</paper-button>
-</template>
-
-<table class="eco-grid" hidden$="[[ !_showTable(searchTerm, hideIfNoKeyword) ]]">
-    <thead>
-        <tr>
+        
+        <iron-ajax headers="[[ _getJWT(jwt) ]]" auto="" id="listRequest" method="GET" params="[[ params ]]" url="[[ apiRoot ]]/[[ schema ]]/[[ table ]]" handle-as="json" last-response="{{ rows }}" debounce-duration="300"></iron-ajax>
             
-            <template is="dom-if" if="[[ allowSelect ]]">
-                <th></th>
-            </template>
+            <iron-ajax headers="[[ _getJWT(jwt) ]]" id="actionRequest" handle-as="json" content-type="application/json"></iron-ajax>
             
-            <template is="dom-if" if="[[ showImage ]]">
-                <th></th>
-            </template>
-            
-            <template is="dom-repeat" items="[[ dataColumns ]]" as="column">
-                <th class$="[[ _isActiveOrdered(column, params.orderBy) ]]">[[ column.label ]]
-                    <span hidden$="[[ !allowSort ]]">
+            <iron-ajax method="POST" body="[[ newRecord ]]" url="[[ apiRoot ]]/[[ schema ]]/[[ table ]]" headers="[[ _getJWT(jwt) ]]" id="newRecordRequest" handle-as="json" content-type="application/json"></iron-ajax>
+
+                <div class="title">
+                    [[ title ]]
+                </div>
+
+                <template is="dom-if" if="[[ keywordFilter ]]">
+                    <paper-input type="text" error-message="Invalid input!" min="3" label="Filter by [[ keywordFilterTitle ]]" value="{{ searchTerm }}">
+                        <iron-icon prefix="" icon="search"></iron-icon>
+                    </paper-input>
+                </template>
+
+                
+                <paper-dialog id="newDialog">
+                    <h2>Add New Entry to [[ title ]]</h2>
+                    <p>
+                        Enter the following required fields in order to create a new record.
+                    </p>
+                    <p>
+                        <template is="dom-repeat" items="[[ requiredFieldsForNew ]]" as="requiredField">
+                            <paper-input type="text" label="[[ requiredField.label ]]" on-change="_newRecordFieldChanged"></paper-input>
+                        </template>
+                        <paper-button raised="" on-tap="_createNew">Add</paper-button>
+                    </p>
+
+                </paper-dialog>
+
+                <span hidden$="[[ !_showArray(requiredFieldsForNew) ]]"><paper-icon-button icon="add-circle" on-tap="_showNewDialog"></paper-icon-button></span>
+
+                
+                <template is="dom-repeat" items="[[ bulkActions ]]" as="action">
+                    <paper-button raised="" disabled$="[[ !numberOfLinesSelected ]]" on-tap="_runBulkAction">[[ action.label ]]</paper-button>
+                </template>
+
+                <table class="eco-grid" hidden$="[[ !_showTable(searchTerm, hideIfNoKeyword) ]]">
+                    <thead>
+                        <tr>
+                            
+                            <template is="dom-if" if="[[ allowSelect ]]">
+                                <th></th>
+                            </template>
+                            
+                            <template is="dom-if" if="[[ showImage ]]">
+                                <th></th>
+                            </template>
+                            
+                            <template is="dom-repeat" items="[[ dataColumns ]]" as="column">
+                                <th class$="[[ _isActiveOrdered(column, params.orderBy) ]]">[[ column.label ]]
+                                    <span hidden$="[[ !allowSort ]]">
                         <paper-icon-button icon="filter-list" on-tap="_toggleOrder">
                         </paper-icon-button>
                     </span>
-                </th>
-            </template>
-            
-            <template is="dom-repeat" items="[[ actionColumns ]]" as="column">
-                <th> [[ column.label ]]</th>
-            </template>
-        </tr>
-    </thead>
-    <tbody hidden$="[[ !rows ]]">
-        <template id="mainlist" is="dom-repeat" items="[[ rows ]]" as="row">
-            <tr>
-                
-                <template is="dom-if" if="[[ allowSelect ]]">
-                    <td>
-                        <paper-checkbox class="bulkselection-checkbox" on-change="_bulkSelectChanged"></paper-checkbox>
-                    </td>
-                </template>
-                
-                <template is="dom-if" if="[[ showImage ]]">
-                    <td><img class="line-image" src="[[ publicApiRoot ]]/images/[[ schema ]]/[[ _selectImage(row) ]]?width=100"></td>
-                </template>
-                
-                <template is="dom-repeat" items="[[ dataColumns ]]" as="column">
-                    <td class$="listCell cellEdit[[ _showEdit(column, globalAllowEdit) ]]">
-                        <template is="dom-if" if="[[ column.linkTo ]]">
-                            <a href="/admin/view/[[ column.linkSchema ]]/[[ column.linkTable ]]/[[ _getLink(row,column) ]][[ _getView(column) ]]">
+                                </th>
+                            </template>
+                            
+                            <template is="dom-repeat" items="[[ actionColumns ]]" as="column">
+                                <th> [[ column.label ]]</th>
+                            </template>
+                        </tr>
+                    </thead>
+                    <tbody hidden$="[[ !rows ]]">
+                        <template id="mainlist" is="dom-repeat" items="[[ rows ]]" as="row">
+                            <tr>
+                                
+                                <template is="dom-if" if="[[ allowSelect ]]">
+                                    <td>
+                                        <paper-checkbox class="bulkselection-checkbox" on-change="_bulkSelectChanged"></paper-checkbox>
+                                    </td>
+                                </template>
+                                
+                                <template is="dom-if" if="[[ showImage ]]">
+                                    <td><img class="line-image" src="[[ publicApiRoot ]]/images/[[ schema ]]/[[ _selectImage(row) ]]?width=100"></td>
+                                </template>
+                                
+                                <template is="dom-repeat" items="[[ dataColumns ]]" as="column">
+                                    <td class$="listCell cellEdit[[ _showEdit(column, globalAllowEdit) ]]">
+                                        <template is="dom-if" if="[[ column.linkTo ]]">
+                                            <a href="/admin/view/[[ column.linkSchema ]]/[[ column.linkTable ]]/[[ _getLink(row,column) ]][[ _getView(column) ]]">
                                         [[ _getCell(row,column) ]]
                                         </a>
+                                        </template>
+                                        <template is="dom-if" if="[[ !column.linkTo ]]">
+                                            <template is="dom-if" if="[[ _showEdit(column, globalAllowEdit) ]]">
+                                                <paper-input label="Edit [[ _getCell(row,column) ]]" class="cellInput" type="[[ column.edit.type ]]" value="[[ _getCell(row,column) ]]" on-change="_emitLineUpdateEvent"></paper-input>
+                                            </template>
+                                            <template is="dom-if" if="[[ !_showEdit(column, globalAllowEdit) ]]">
+                                                <div class="listCellContentContainer">
+                                                    [[ _getCell(row,column) ]]
+                                                </div>
+
+                                            </template>
+
+                                        </template>
+                                    </td>
+                                </template>
+                                
+                                <template is="dom-repeat" items="[[ actionColumns ]]" as="column">
+                                    <td>
+                                        <paper-icon-button icon$="[[ column.icon ]]" on-tap="_runLineAction">
+                                    </paper-icon-button></td>
+                                </template>
+                            </tr>
                         </template>
-                        <template is="dom-if" if="[[ !column.linkTo ]]">
-                            <template is="dom-if" if="[[ _showEdit(column, globalAllowEdit) ]]">
-                                <paper-input label="Edit [[ _getCell(row,column) ]]" class="cellInput" type="[[ column.edit.type ]]" value="[[ _getCell(row,column) ]]" on-change="_emitLineUpdateEvent"></paper-input>
-                            </template>
-                            <template is="dom-if" if="[[ !_showEdit(column, globalAllowEdit) ]]">
-                                <div class="listCellContentContainer">
-                                    [[ _getCell(row,column) ]]
-                                </div>
+                    </tbody>
+                </table>
 
-                            </template>
+                <div style="text-align:center; padding: 1em; font-size: large" hidden$="[[ rows ]]"> Loading [[ title ]] ...
+                </div>
 
-                        </template>
-                    </td>
-                </template>
-                
-                <template is="dom-repeat" items="[[ actionColumns ]]" as="column">
-                    <td>
-                        <paper-icon-button icon$="[[ column.icon ]]" on-tap="_runLineAction">
-                    </paper-icon-button></td>
-                </template>
-            </tr>
-        </template>
-    </tbody>
-</table>
+                <array-selector id="selector" items="{{rows}}" selected="{{bulkSelection}}" multi="" toggle=""></array-selector>
 
-<div style="text-align:center; padding: 1em; font-size: large" hidden$="[[ rows ]]"> Loading [[ title ]] ...
-</div>
-
-<array-selector id="selector" items="{{rows}}" selected="{{bulkSelection}}" multi="" toggle=""></array-selector>
-
-<content></content>
+                <content></content>
 
 
 
-</template>
+    </template>
 
-<script>Polymer({is:"eco-list-block",behaviors:[EcoBehaviors.ApiBehavior,EcoCustom.Properties,EcoCustom.Actions],properties:{jwt:String,globalAllowEdit:{type:Boolean,value:!1},table:{type:String,observer:"_resetRows"},schema:{type:String,observer:"_resetRows"},restrictRecord:{type:String,observer:"_restrict"},restrictField:String,title:String,dataColumns:Array,actionColumns:Array,bulkActions:Array,requiredFieldsForNew:{type:Array,value:function(){return[]}},params:{type:Object,value:function(){return{orderBy:"id",limit:"100"}}},searchTerm:{type:String,observer:"_searchTermUpdated"},allowSort:{type:Boolean,value:!1},allowSelect:{type:Boolean,value:!1},confirmLineActions:{type:Boolean,value:!0},showImage:{type:Boolean,value:!1},hideIfNoKeyword:{type:Boolean,value:!1},keywordFilter:{type:String},blockConfig:{type:Object,observer:"_setBlockConfig"},bulkSelection:{type:Array,reflectToAttribute:!0,notify:!0},newRecord:{type:Object,value:function(){return{}}},newRecordLinkView:String},observers:["_bulkSelectionChanged(bulkSelection.splices)"],listeners:{updateLine:"_updateLine","actionRequest.response":"_updateAll","listRequest.response":"_listUpdated","newRecordRequest.response":"_newRecordCreated","newRecordRequest.error":"_newRecordNotCreated"},_selectImage:function(e){return e.images=e.images||[],e.image||e.images[0]},_showTable:function(e,t){return e||!t},_restrict:function(e){if(this.restrictField){var t="params."+this.restrictField;this.set(t,"='"+e+"'")}},_setBlockConfig:function(e){this.title="",this.dataColumns=[],this.actionColumns=[],this.bulkActions=[],this.params={orderBy:"id",limit:"100"},this.allowSort=!1,this.allowSelect=!1,this.confirmLineActions=!1,this.showImage=!1,this.keywordFilter="",this.keywordFilterTitle="",this.searchTerm="",this.requiredFieldsForNew=[],Object.assign(this,e)},_resetRows:function(){this.set("rows",[])},_runLineAction:function(e){var t="Are you sure you want to "+e.model.__data__.column.label,i=!this.confirmLineActions||confirm(t);if(i){var o=this[e.model.__data__.column.actionFunction];if(o){var n=e.model.dataHost.dataHost.__data__.row;o(n,this)}else this.fire("showMessage",{text:"Error: No action or incorrect action specified"})}},deleteLine:function(e,t){t.$.actionRequest.method="DELETE",t.$.actionRequest.url=t.apiRoot+"/"+t.schema+"/"+t.table+"/"+e.id,t.$.actionRequest.generateRequest()},_showNewDialog:function(){this.$.newDialog.open()},_newRecordFieldChanged:function(e){var t=Polymer.dom(e),i="newRecord."+e.model.__data__.requiredField.name,o=t.rootTarget.__data__.value||t.event.target.__data__.bindValue;this.set(i,o)},_createNew:function(e){this.$.newRecordRequest.generateRequest()},_newRecordCreated:function(e){window.location="/admin/view/"+this.schema+"/"+this.table+"/"+e.detail.__data__.response.id+"?view="+this.newRecordLinkView},_newRecordNotCreated:function(e){console.log(e)},_runBulkAction:function(e){var t="Are you sure you want to "+e.model.__data__.action.label,o=!e.model.__data__.action.confirm||confirm(t);if(o){var n=this[e.model.__data__.action.actionFunction];if(n){var r=this.bulkSelection;for(i=0;i<r.length;i++)n(r[i],this)}else this.fire("showMessage",{text:"Error: No action or incorrect action specified"})}},_searchTermUpdated:function(){this.searchTerm&&(p="params."+this.keywordFilter,this.set(p,"ILIKE '%"+this.searchTerm+"%'"))},_updateAll:function(e){this.fire("blockUpdated")},refresh:function(){this.$.listRequest.generateRequest()},_showEdit:function(e,t){return e.edit&&t},_showArray:function(e){return e.length>0},_bulkSelectionChanged:function(){this.set("numberOfLinesSelected",this.bulkSelection.length)},_listUpdated:function(){this._clearBulkSelection(),this.dataColumns||this._setDefaultDataColumns()},_setDefaultDataColumns:function(){defaultDataColumns=[],firstRow=this.rows[0];for(var e in firstRow)defaultDataColumns.push({name:e,heading:e.replace(/_|-/gi," ").toUpperCase()});this.set("dataColumns",defaultDataColumns)},_clearBulkSelection:function(){var e=document.getElementsByClassName("bulkselection-checkbox");for(i=0;i<e.length;i++)e[i].removeAttribute("checked")},_getCell:function(e,t){return e[t.name]},_getLink:function(e,t){return e[t.linkTo]},_getView:function(e){return e.linkView?"?view="+e.linkView:""},_testIf:function(e){return!0},_toggleOrder:function(e){this.params.orderBy==e.model.__data__.column.name?this.set("params.orderBy",e.model.__data__.column.name+" DESC"):this.set("params.orderBy",e.model.__data__.column.name)},_isActiveOrdered:function(e,t){return t==e.name?"active-ordered":t.includes(e.name)?"active-ordered desc":void 0},_isSelected:function(e,t){console.log(e),console.log(t.id)},_bulkSelectChanged:function(e){var t=this.$.mainlist.itemForElement(e.target);e.target.checked?this.$.selector.select(t):this.$.selector.deselect(t)},_emitLineUpdateEvent:function(e){var t=Polymer.dom(e);this.debounce("actionRequest",function(){this.fire("updateLine",{lineUpdated:t.event.model.__data__.row.id,fieldUpdated:t.event.model.__data__.column.name,newValue:t.rootTarget.__data__.value||t.event.target.__data__.bindValue})},300)},_updateLine:function(e){this.$.actionRequest.method="PATCH",this.$.actionRequest.url=this.apiRoot+"/"+this.schema+"/"+this.table+"/"+e.detail.lineUpdated,postBody={},postBody[e.detail.fieldUpdated]=e.detail.newValue,this.$.actionRequest.body=postBody,this.$.actionRequest.generateRequest()}});</script>
+    <script>Polymer({is:"eco-list-block",behaviors:[EcoBehaviors.ApiBehavior,EcoCustom.Properties,EcoCustom.Actions],properties:{jwt:String,globalAllowEdit:{type:Boolean,value:!1},table:{type:String,observer:"_resetRows"},schema:{type:String,observer:"_resetRows"},restrictRecord:{type:String,observer:"_restrict"},restrictField:String,title:String,dataColumns:Array,actionColumns:Array,bulkActions:Array,requiredFieldsForNew:{type:Array,value:function(){return[]}},params:{type:Object,value:function(){return{orderBy:"id",limit:"100"}}},searchTerm:{type:String,observer:"_searchTermUpdated"},allowSort:{type:Boolean,value:!1},allowSelect:{type:Boolean,value:!1},confirmLineActions:{type:Boolean,value:!0},showImage:{type:Boolean,value:!1},hideIfNoKeyword:{type:Boolean,value:!1},keywordFilter:{type:String},blockConfig:{type:Object,observer:"_setBlockConfig"},bulkSelection:{type:Array,reflectToAttribute:!0,notify:!0},newRecord:{type:Object,value:function(){return{}}},newRecordLinkView:String},observers:["_bulkSelectionChanged(bulkSelection.splices)"],listeners:{updateLine:"_updateLine","actionRequest.response":"_updateAll","listRequest.response":"_listUpdated","newRecordRequest.response":"_newRecordCreated","newRecordRequest.error":"_newRecordNotCreated"},_selectImage:function(e){return e.images=e.images||[],e.image||e.images[0]},_showTable:function(e,t){return e||!t},_restrict:function(e){if(this.restrictField){var t="params."+this.restrictField;this.set(t,"='"+e+"'")}},_setBlockConfig:function(e){this.title="",this.dataColumns=[],this.actionColumns=[],this.bulkActions=[],this.params={orderBy:"id",limit:"100"},this.allowSort=!1,this.allowSelect=!1,this.confirmLineActions=!1,this.showImage=!1,this.keywordFilter="",this.keywordFilterTitle="",this.searchTerm="",this.requiredFieldsForNew=[],Object.assign(this,e)},_resetRows:function(){this.set("rows",[])},_runLineAction:function(e){var t="Are you sure you want to "+e.model.__data__.column.label,i=!this.confirmLineActions||confirm(t);if(i){var o=this[e.model.__data__.column.actionFunction];if(o){var n=e.model.dataHost.dataHost.__data__.row;o(n,this)}else this.fire("showMessage",{text:"Error: No action or incorrect action specified"})}},deleteLine:function(e,t){t.$.actionRequest.method="DELETE",t.$.actionRequest.url=t.apiRoot+"/"+t.schema+"/"+t.table+"/"+e.id,t.$.actionRequest.generateRequest()},_showNewDialog:function(){this.$.newDialog.open()},_newRecordFieldChanged:function(e){var t=Polymer.dom(e),i="newRecord."+e.model.__data__.requiredField.name,o=t.rootTarget.__data__.value||t.event.target.__data__.bindValue;this.set(i,o)},_createNew:function(e){this.$.newRecordRequest.generateRequest()},_newRecordCreated:function(e){window.location="/admin/view/"+this.schema+"/"+this.table+"/"+e.detail.__data__.response.id+"?view="+this.newRecordLinkView},_newRecordNotCreated:function(e){console.log(e)},_runBulkAction:function(e){var t="Are you sure you want to "+e.model.__data__.action.label,o=!e.model.__data__.action.confirm||confirm(t);if(o){var n=this[e.model.__data__.action.actionFunction];if(n){var r=this.bulkSelection;for(i=0;i<r.length;i++)n(r[i],this)}else this.fire("showMessage",{text:"Error: No action or incorrect action specified"})}},_searchTermUpdated:function(){this.searchTerm&&(p="params."+this.keywordFilter,this.set(p,"ILIKE '%"+this.searchTerm+"%'"))},_updateAll:function(e){this.fire("blockUpdated")},refresh:function(){this.$.listRequest.generateRequest()},_showEdit:function(e,t){return e.edit&&t},_showArray:function(e){return e.length>0},_bulkSelectionChanged:function(){this.set("numberOfLinesSelected",this.bulkSelection.length)},_listUpdated:function(){this._clearBulkSelection(),this.dataColumns||this._setDefaultDataColumns()},_setDefaultDataColumns:function(){defaultDataColumns=[],firstRow=this.rows[0];for(var e in firstRow)defaultDataColumns.push({name:e,heading:e.replace(/_|-/gi," ").toUpperCase()});this.set("dataColumns",defaultDataColumns)},_clearBulkSelection:function(){var e=document.getElementsByClassName("bulkselection-checkbox");for(i=0;i<e.length;i++)e[i].removeAttribute("checked")},_getCell:function(e,t){return e[t.name]},_getLink:function(e,t){return e[t.linkTo]},_getView:function(e){return e.linkView?"?view="+e.linkView:""},_testIf:function(e){return!0},_toggleOrder:function(e){this.params.orderBy==e.model.__data__.column.name?this.set("params.orderBy",e.model.__data__.column.name+" DESC"):this.set("params.orderBy",e.model.__data__.column.name)},_isActiveOrdered:function(e,t){return t==e.name?"active-ordered":t.includes(e.name)?"active-ordered desc":void 0},_isSelected:function(e,t){console.log(e),console.log(t.id)},_bulkSelectChanged:function(e){var t=this.$.mainlist.itemForElement(e.target);e.target.checked?this.$.selector.select(t):this.$.selector.deselect(t)},_emitLineUpdateEvent:function(e){var t=Polymer.dom(e);this.debounce("actionRequest",function(){this.fire("updateLine",{lineUpdated:t.event.model.__data__.row.id,fieldUpdated:t.event.model.__data__.column.name,newValue:t.rootTarget.__data__.value||t.event.target.__data__.bindValue})},300)},_updateLine:function(e){this.$.actionRequest.method="PATCH",this.$.actionRequest.url=this.apiRoot+"/"+this.schema+"/"+this.table+"/"+e.detail.lineUpdated,postBody={},postBody[e.detail.fieldUpdated]=e.detail.newValue,this.$.actionRequest.body=postBody,this.$.actionRequest.generateRequest()}});</script>
 
 </dom-module><dom-module id="eco-field-block" assetpath="">
 
     <template>
 
         <style include="custom-styles">
-
-             :host {
+            :host {
                 display: block;
                 margin: 0.5em;
                 color: var(--primary-color);
@@ -3633,11 +3630,11 @@ delete this[t])},_configureProperties:function(e,t){for(var n in e){var r=e[n];i
                 box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
                 padding: 0.5em;
             }
-
-           :host([is-horizontal]) .field {
-                display:inline-block;
+            
+            :host([is-horizontal]) .field {
+                display: inline-block;
             }
-
+            
             .title {
                 font-size: 125%;
                 font-weight: bold;
@@ -3645,121 +3642,122 @@ delete this[t])},_configureProperties:function(e,t){for(var n in e){var r=e[n];i
                 margin-bottom: 0.5em;
                 color: var(--primary-text-color);
             }
-
+            
             paper-input.fieldInput {
-                --paper-input-container-disabled:{
+                --paper-input-container-disabled: {
                     filter: alpha(opacity=100);
-	                opacity: 1;
+                    opacity: 1;
                 }
                 --paper-input-container-underline: {
                     display: none;
-                };
+                }
+                ;
                 --paper-input-container-underline-disabled: {
                     display: none;
-                };
-                --paper-input-container-underline-focus: {
-                    
-                };
+                }
+                ;
+                --paper-input-container-underline-focus: {}
+                ;
             }
-
         </style>
 
 
-<div class="title">[[ title ]]</div>
+        <div class="title">[[ title ]]</div>
 
-<template is="dom-repeat" items="[[ fields ]]" as="field">
-    
-    <div class="field">
+        <template is="dom-repeat" items="[[ fields ]]" as="field">
 
-        
-        <template is="dom-if" if="[[ field.edit.dropdown ]]">
-            [[ _updateConfig(field.edit.items) ]]
-            <vaadin-combo-box disabled$="[[ !_isEdit(globalAllowEdit, field) ]]" label="[[ field.label ]]" value="[[ _getValue(field, model) ]]" item-label-path="[[ field.edit.labelPath ]]" item-value-path="id" items="[[ _showConfigList(config.*, field.edit.items) ]]">
-                <template is="dom-if" if="[[ _isEdit(globalAllowEdit, field) ]]">
-                    <iron-icon prefix="" icon="editor:mode-edit"></iron-icon>
+            <div class="field">
+
+                
+                <template is="dom-if" if="[[ field.edit.dropdown ]]">
+                    [[ _updateConfig(field.edit.items) ]]
+                    <vaadin-combo-box disabled$="[[ !_isEdit(globalAllowEdit, field) ]]" label="[[ field.label ]]" value="[[ _getValue(field, model) ]]" item-label-path="[[ field.edit.labelPath ]]" item-value-path="id" items="[[ _showConfigList(config.*, field.edit.items) ]]">
+                        <template is="dom-if" if="[[ _isEdit(globalAllowEdit, field) ]]">
+                            <iron-icon prefix="" icon="editor:mode-edit"></iron-icon>
+                        </template>
+                        </vaadin-combo-box>
                 </template>
-            </vaadin-combo-box>
+
+                
+                <template is="dom-if" if="[[ !field.edit.dropdown ]]">
+                    <paper-input class="fieldInput" type="text" label="[[ field.label ]]" value="[[ _getValue(field, model) ]]" disabled$="[[ !_isEdit(globalAllowEdit, field) ]]" on-change="_emitFieldChangedEvent">
+                        <template is="dom-if" if="[[ _isEdit(globalAllowEdit, field) ]]">
+                            <iron-icon prefix="" icon="editor:mode-edit"></iron-icon>
+                        </template>
+                        </paper-input>
+                </template>
+
+            </div>
+
         </template>
 
-        
-        <template is="dom-if" if="[[ !field.edit.dropdown ]]">
-            <paper-input class="fieldInput" type="text" label="[[ field.label ]]" value="[[ _getValue(field, model) ]]" disabled$="[[ !_isEdit(globalAllowEdit, field) ]]" on-change="_emitFieldChangedEvent">
-                <template is="dom-if" if="[[ _isEdit(globalAllowEdit, field) ]]">
-                    <iron-icon prefix="" icon="editor:mode-edit"></iron-icon>
-                </template>
-            </paper-input>
-        </template>
+    </template>
 
-    </div>
-
-</template>
-
-</template>
-
-<script>Polymer({is:"eco-field-block",behaviors:[EcoBehaviors.ApiBehavior,EcoCustom.Properties,EcoCustom.Actions],properties:{model:{type:Object,value:function(){return{}}},blockConfig:{type:Object,observer:"_setBlockConfig"},globalAllowEdit:{type:Boolean,value:!1},isHorizontal:{type:Boolean,value:!1,reflectToAttribute:!0},title:String,fields:Array,type:String,config:{type:Object}},_setBlockConfig:function(e){this.title="",this.class="",this.isHorizontal=!1,this.fields=[],Object.assign(this,e)},_isEdit:function(e,t){return!!e&&t.edit},_getValue:function(e,t){return t[e.name]},_emitFieldChangedEvent:function(e){var t=Polymer.dom(e);this.debounce("updateRequest",function(){this.fire("recordUpdated",{fieldUpdated:t.event.model.__data__.field.name,newValue:t.rootTarget.__data__.value||t.event.target.__data__.bindValue})},500)},_updateConfig:function(e){this.fire("updateConfig",{table:e})},_showConfigList:function(e,t){return this.config[t]}});</script>
+    <script>Polymer({is:"eco-field-block",behaviors:[EcoBehaviors.ApiBehavior,EcoCustom.Properties,EcoCustom.Actions],properties:{model:{type:Object,value:function(){return{}}},blockConfig:{type:Object,observer:"_setBlockConfig"},globalAllowEdit:{type:Boolean,value:!1},isHorizontal:{type:Boolean,value:!1,reflectToAttribute:!0},title:String,fields:Array,type:String,config:{type:Object}},_setBlockConfig:function(e){this.title="",this.class="",this.isHorizontal=!1,this.fields=[],Object.assign(this,e)},_isEdit:function(e,t){return!!e&&t.edit},_getValue:function(e,t){return t[e.name]},_emitFieldChangedEvent:function(e){var t=Polymer.dom(e);this.debounce("updateRequest",function(){this.fire("recordUpdated",{fieldUpdated:t.event.model.__data__.field.name,newValue:t.rootTarget.__data__.value||t.event.target.__data__.bindValue})},500)},_updateConfig:function(e){this.fire("updateConfig",{table:e})},_showConfigList:function(e,t){return this.config[t]}});</script>
 
 </dom-module><dom-module id="eco-view" assetpath="./">
     <template>
 
-		<style include="custom-styles">
-		</style>
+        <style include="custom-styles">
 
-		
+        </style>
 
-
-
-	
-	<iron-ajax auto="" id="viewBlocksRequest" method="GET" url="/bundles/[[ schemaData.id ]]/[[ queries.view ]].json" handle-as="json" last-response="{{ viewBlocks }}"></iron-ajax>
-
-	
-	<iron-ajax auto="" id="viewListRequest" method="GET" url="/views" handle-as="json" last-response="{{ viewsAvailable }}"></iron-ajax>
-
-	 
-    <iron-ajax id="recordRequest" headers="[[ _getJWT(jwt) ]]" url="[[ apiRoot ]]/[[ schemaData.id ]]/[[ tableData.id ]]/[[ recordData.id ]]" handle-as="json" last-response="{{record}}" debounce-duration="300"></iron-ajax>
-
-	
-    <iron-ajax headers="[[ _getJWT(jwt) ]]" id="actionRequest" handle-as="json" content-type="application/json"></iron-ajax>
-
-    <app-route route="{{route}}" pattern="/:id" data="{{schemaData}}" tail="{{subroute}}" query-params="{{ queries }}">
-    </app-route>
-
-	<app-route route="{{subroute}}" pattern="/:id" data="{{tableData}}" tail="{{subsubroute}}">
-	</app-route>
-
-	<app-route route="{{subsubroute}}">
-	</app-route>
+        
 
 
-	<app-toolbar>
-		
-		<paper-toggle-button checked="{{ globalAllowEdit }}">
-				<iron-icon icon="editor:mode-edit"></iron-icon>
-		</paper-toggle-button>
-	
-	<div main-title=""></div>
 
-	
-	<vaadin-combo-box label="Choose a view" value="{{ queries.view }}" item-label-path="description" item-value-path="name" items="[[ _getAvailableViewsForThisTable(viewsAvailable, schemaData, tableData, recordData) ]]"></vaadin-combo-box>
+        
+        <iron-ajax auto="" id="viewBlocksRequest" method="GET" url="/bundles/[[ schemaData.id ]]/[[ queries.view ]].json" handle-as="json" last-response="{{ viewBlocks }}"></iron-ajax>
 
-	</app-toolbar>
+            
+            <iron-ajax auto="" id="viewListRequest" method="GET" url="/views" handle-as="json" last-response="{{ viewsAvailable }}"></iron-ajax>
 
-	
-	<paper-toast horizontal-align="right" id="updateConfirmationToast"></paper-toast>
+            
+            <iron-ajax id="recordRequest" headers="[[ _getJWT(jwt) ]]" url="[[ apiRoot ]]/[[ schemaData.id ]]/[[ tableData.id ]]/[[ recordData.id ]]" handle-as="json" last-response="{{record}}" debounce-duration="300"></iron-ajax>
 
-	
-	<template is="dom-repeat" items="[[ viewBlocks ]]" as="block">
-	
-			
-			
-			<template is="dom-if" if="[[ _isListBlock(block) ]]">
-		      <eco-list-block jwt="[[ jwt ]]" global-allow-edit="[[ globalAllowEdit ]]" schema="[[ _getSchema(schemaData.id, block) ]]" table="[[ _getTable(tableData.id, block) ]]" restrict-record="[[ recordData.id ]]" block-config="[[ block ]]"></eco-list-block>		
-			</template>
+                
+                <iron-ajax headers="[[ _getJWT(jwt) ]]" id="actionRequest" handle-as="json" content-type="application/json"></iron-ajax>
 
-    <template is="dom-if" if="[[ !_isListBlock(block) ]]">
-		      <eco-field-block global-allow-edit="[[ globalAllowEdit ]]" block-config="[[ block ]]" model="[[ record ]]" config="[[ config ]]"></eco-field-block>		
-			</template>
+                <app-route route="{{route}}" pattern="/:id" data="{{schemaData}}" tail="{{subroute}}" query-params="{{ queries }}">
+                </app-route>
 
-    </template>
+                <app-route route="{{subroute}}" pattern="/:id" data="{{tableData}}" tail="{{subsubroute}}">
+                </app-route>
+
+                <app-route route="{{subsubroute}}">
+                </app-route>
+
+
+                <app-toolbar>
+                    
+                    <paper-toggle-button checked="{{ globalAllowEdit }}">
+                        <iron-icon icon="editor:mode-edit"></iron-icon>
+                    </paper-toggle-button>
+
+                    <div main-title=""></div>
+
+                    
+                    <vaadin-combo-box label="Choose a view" value="{{ queries.view }}" item-label-path="description" item-value-path="name" items="[[ _getAvailableViewsForThisTable(viewsAvailable, schemaData, tableData, recordData) ]]"></vaadin-combo-box>
+
+                </app-toolbar>
+
+                
+                <paper-toast horizontal-align="right" id="updateConfirmationToast"></paper-toast>
+
+                
+                <template is="dom-repeat" items="[[ viewBlocks ]]" as="block">
+
+                    
+                    
+                    <template is="dom-if" if="[[ _isListBlock(block) ]]">
+                        <eco-list-block jwt="[[ jwt ]]" global-allow-edit="[[ globalAllowEdit ]]" schema="[[ _getSchema(schemaData.id, block) ]]" table="[[ _getTable(tableData.id, block) ]]" restrict-record="[[ recordData.id ]]" block-config="[[ block ]]"></eco-list-block>
+                    </template>
+
+                    <template is="dom-if" if="[[ !_isListBlock(block) ]]">
+                        <eco-field-block global-allow-edit="[[ globalAllowEdit ]]" block-config="[[ block ]]" model="[[ record ]]" config="[[ config ]]"></eco-field-block>
+                    </template>
+
+                </template>
 
 
     </template>

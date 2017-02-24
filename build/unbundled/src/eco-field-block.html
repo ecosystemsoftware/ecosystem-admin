@@ -12,15 +12,14 @@
 <link rel="import" href="eco-list-block.html">
 <link rel="import" href="eco-behaviors.html">
 
-
+<link rel="import" href="eco-bundle-imports.html">
 
 </head><body><dom-module id="eco-field-block">
 
     <template>
 
         <style include="custom-styles">
-
-             :host {
+            :host {
                 display: block;
                 margin: 0.5em;
                 color: var(--primary-color);
@@ -28,11 +27,11 @@
                 box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
                 padding: 0.5em;
             }
-
-           :host([is-horizontal]) .field {
-                display:inline-block;
+            
+            :host([is-horizontal]) .field {
+                display: inline-block;
             }
-
+            
             .title {
                 font-size: 125%;
                 font-weight: bold;
@@ -40,57 +39,57 @@
                 margin-bottom: 0.5em;
                 color: var(--primary-text-color);
             }
-
+            
             paper-input.fieldInput {
-                --paper-input-container-disabled:{
+                --paper-input-container-disabled: {
                     filter: alpha(opacity=100);
-	                opacity: 1;
+                    opacity: 1;
                 }
                 --paper-input-container-underline: {
                     display: none;
-                };
+                }
+                ;
                 --paper-input-container-underline-disabled: {
                     display: none;
-                };
-                --paper-input-container-underline-focus: {
-                    
-                };
+                }
+                ;
+                --paper-input-container-underline-focus: {}
+                ;
             }
-
         </style>
 
 
-<div class="title">[[ title ]]</div>
+        <div class="title">[[ title ]]</div>
 
-<template is="dom-repeat" items="[[ fields ]]" as="field">
-    
-    <div class="field">
+        <template is="dom-repeat" items="[[ fields ]]" as="field">
 
-        
-        <template is="dom-if" if="[[ field.edit.dropdown ]]">
-            [[ _updateConfig(field.edit.items) ]]
-            <vaadin-combo-box disabled$="[[ !_isEdit(globalAllowEdit, field) ]]" label="[[ field.label ]]" value="[[ _getValue(field, model) ]]" item-label-path="[[ field.edit.labelPath ]]" item-value-path="id" items="[[ _showConfigList(config.*, field.edit.items) ]]">
-                <template is="dom-if" if="[[ _isEdit(globalAllowEdit, field) ]]">
-                    <iron-icon prefix="" icon="editor:mode-edit"></iron-icon>
+            <div class="field">
+
+                
+                <template is="dom-if" if="[[ field.edit.dropdown ]]">
+                    [[ _updateConfig(field.edit.items) ]]
+                    <vaadin-combo-box disabled$="[[ !_isEdit(globalAllowEdit, field) ]]" label="[[ field.label ]]" value="[[ _getValue(field, model) ]]" item-label-path="[[ field.edit.labelPath ]]" item-value-path="id" items="[[ _showConfigList(config.*, field.edit.items) ]]">
+                        <template is="dom-if" if="[[ _isEdit(globalAllowEdit, field) ]]">
+                            <iron-icon prefix="" icon="editor:mode-edit"></iron-icon>
+                        </template>
+                        </vaadin-combo-box>
                 </template>
-            </vaadin-combo-box>
+
+                
+                <template is="dom-if" if="[[ !field.edit.dropdown ]]">
+                    <paper-input class="fieldInput" type="text" label="[[ field.label ]]" value="[[ _getValue(field, model) ]]" disabled$="[[ !_isEdit(globalAllowEdit, field) ]]" on-change="_emitFieldChangedEvent">
+                        <template is="dom-if" if="[[ _isEdit(globalAllowEdit, field) ]]">
+                            <iron-icon prefix="" icon="editor:mode-edit"></iron-icon>
+                        </template>
+                        </paper-input>
+                </template>
+
+            </div>
+
         </template>
 
-        
-        <template is="dom-if" if="[[ !field.edit.dropdown ]]">
-            <paper-input class="fieldInput" type="text" label="[[ field.label ]]" value="[[ _getValue(field, model) ]]" disabled$="[[ !_isEdit(globalAllowEdit, field) ]]" on-change="_emitFieldChangedEvent">
-                <template is="dom-if" if="[[ _isEdit(globalAllowEdit, field) ]]">
-                    <iron-icon prefix="" icon="editor:mode-edit"></iron-icon>
-                </template>
-            </paper-input>
-        </template>
+    </template>
 
-    </div>
-
-</template>
-
-</template>
-
-<script>Polymer({is:"eco-field-block",behaviors:[EcoBehaviors.ApiBehavior,EcoCustom.Properties,EcoCustom.Actions],properties:{model:{type:Object,value:function(){return{}}},blockConfig:{type:Object,observer:"_setBlockConfig"},globalAllowEdit:{type:Boolean,value:!1},isHorizontal:{type:Boolean,value:!1,reflectToAttribute:!0},title:String,fields:Array,type:String,config:{type:Object}},_setBlockConfig:function(e){this.title="",this.class="",this.isHorizontal=!1,this.fields=[],Object.assign(this,e)},_isEdit:function(e,t){return!!e&&t.edit},_getValue:function(e,t){return t[e.name]},_emitFieldChangedEvent:function(e){var t=Polymer.dom(e);this.debounce("updateRequest",function(){this.fire("recordUpdated",{fieldUpdated:t.event.model.__data__.field.name,newValue:t.rootTarget.__data__.value||t.event.target.__data__.bindValue})},500)},_updateConfig:function(e){this.fire("updateConfig",{table:e})},_showConfigList:function(e,t){return this.config[t]}});</script>
+    <script>Polymer({is:"eco-field-block",behaviors:[EcoBehaviors.ApiBehavior,EcoCustom.Properties,EcoCustom.Actions],properties:{model:{type:Object,value:function(){return{}}},blockConfig:{type:Object,observer:"_setBlockConfig"},globalAllowEdit:{type:Boolean,value:!1},isHorizontal:{type:Boolean,value:!1,reflectToAttribute:!0},title:String,fields:Array,type:String,config:{type:Object}},_setBlockConfig:function(e){this.title="",this.class="",this.isHorizontal=!1,this.fields=[],Object.assign(this,e)},_isEdit:function(e,t){return!!e&&t.edit},_getValue:function(e,t){return t[e.name]},_emitFieldChangedEvent:function(e){var t=Polymer.dom(e);this.debounce("updateRequest",function(){this.fire("recordUpdated",{fieldUpdated:t.event.model.__data__.field.name,newValue:t.rootTarget.__data__.value||t.event.target.__data__.bindValue})},500)},_updateConfig:function(e){this.fire("updateConfig",{table:e})},_showConfigList:function(e,t){return this.config[t]}});</script>
 
 </dom-module></body></html>

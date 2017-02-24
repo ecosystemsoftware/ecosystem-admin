@@ -29,14 +29,13 @@
 <!--eco components-->
 <link rel="import" href="eco-behaviors.html">
 <!--Set up the bundle imports-->
-<!--<link rel="import" href="../../admin-imports.html">-->
+<link rel="import" href="eco-bundle-imports.html">
 
 <dom-module id="eco-list-block">
 
     <template>
 
         <style include="custom-styles">
-        
             :host {
                 display: block;
                 margin: 0.5em;
@@ -45,7 +44,7 @@
                 box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
                 padding: 0.5em;
             }
-
+            
             .title {
                 font-size: 125%;
                 font-weight: bold;
@@ -54,15 +53,15 @@
                 padding-bottom: 0.5em;
                 color: var(--primary-text-color);
             }
-
+            
             .content tr {
-               border-bottom: solid 1px black; 
+                border-bottom: solid 1px black;
             }
-
+            
             th.active-ordered paper-icon-button {
                 color: var(--primary-color);
             }
-
+            
             th.active-ordered.desc paper-icon-button {
                 -webkit-transform: rotate(180deg);
                 -moz-transform: rotate(180deg);
@@ -70,183 +69,186 @@
                 -ms-transform: rotate(180deg);
                 transform: rotate(180deg);
             }
-
+            
             img.line-image {
                 max-height: 35px;
-                max-width: 50px; 
+                max-width: 50px;
             }
-
+            
             paper-input.cellInput {
                 --paper-input-container: {
                     padding: 0px 0px 0px 0px;
-                };
+                }
+                ;
                 --paper-input-container-underline: {
                     display: none;
-                };
+                }
+                ;
                 --paper-input-container-underline-focus: {
                     display: none;
-                };
+                }
+                ;
                 --paper-input-container-input: {
                     font-size: 100%;
                     color: black;
-                };
+                }
+                ;
             }
-
+            
             .listCell {
-                background-color:#FbFbFb;
-				opacity: 0.8;
+                background-color: #FbFbFb;
+                opacity: 0.8;
                 padding: 0.3em 1em 0.3em 1em;
             }
-
+            
             .listCellContentContainer {
                 overflow: hidden;
                 display: -webkit-box;
                 -webkit-line-clamp: 3;
                 -webkit-box-orient: vertical;
             }
-
+            
             .listCell.cellEdittrue {
                 background-color: #f8f8f8;
                 padding: 0.3em 1em 0.3em 1em;
             }
-
+            
             a {
                 color: var(--primary-color);
             }
-
+            
             paper-icon-button {
                 color: var(--icon-button-color);
             }
-
-
         </style>
 
-<!--Ajax request for the rows in the grid _getParams(where, orderBy, limit, desc)-->
-<iron-ajax headers="[[ _getJWT(jwt) ]]" auto id="listRequest" method="GET" params="[[ params ]]" url="[[ apiRoot ]]/[[ schema ]]/[[ table ]]"
-    handle-as="json" last-response="{{ rows }}" debounce-duration="300"></iron-ajax>
-<!--Ajax request for actions-->
-<iron-ajax headers="[[ _getJWT(jwt) ]]" id="actionRequest" handle-as="json" content-type="application/json"></iron-ajax>
-<!--Ajax request for new record-->
-<iron-ajax method="POST" body="[[ newRecord ]]" url="[[ apiRoot ]]/[[ schema ]]/[[ table ]]" headers="[[ _getJWT(jwt) ]]" id="newRecordRequest"
-    handle-as="json" content-type="application/json"></iron-ajax>
+        <!--Ajax request for the rows in the grid _getParams(where, orderBy, limit, desc)-->
+        <iron-ajax headers="[[ _getJWT(jwt) ]]" auto id="listRequest" method="GET" params="[[ params ]]" url="[[ apiRoot ]]/[[ schema ]]/[[ table ]]"
+            handle-as="json" last-response="{{ rows }}" debounce-duration="300"></iron-ajax>
+            <!--Ajax request for actions-->
+            <iron-ajax headers="[[ _getJWT(jwt) ]]" id="actionRequest" handle-as="json" content-type="application/json"></iron-ajax>
+            <!--Ajax request for new record-->
+            <iron-ajax method="POST" body="[[ newRecord ]]" url="[[ apiRoot ]]/[[ schema ]]/[[ table ]]" headers="[[ _getJWT(jwt) ]]"
+                id="newRecordRequest" handle-as="json" content-type="application/json"></iron-ajax>
 
-<div class="title">
-    [[ title ]]
-</div>
+                <div class="title">
+                    [[ title ]]
+                </div>
 
-<template is="dom-if" if="[[ keywordFilter ]]">
-    <paper-input type="text" error-message="Invalid input!" min="3" label="Filter by [[ keywordFilterTitle ]]" value="{{ searchTerm }}">
-        <iron-icon prefix icon="search"></iron-icon>
-    </paper-input>
-</template>
+                <template is="dom-if" if="[[ keywordFilter ]]">
+                    <paper-input type="text" error-message="Invalid input!" min="3" label="Filter by [[ keywordFilterTitle ]]" value="{{ searchTerm }}">
+                        <iron-icon prefix icon="search"></iron-icon>
+                    </paper-input>
+                </template>
 
-<!--New-->
-<paper-dialog id="newDialog">
-    <h2>Add New Entry to [[ title ]]</h2>
-    <p>
-        Enter the following required fields in order to create a new record.
-    </p>
-    <p>
-        <template is="dom-repeat" items="[[ requiredFieldsForNew ]]" as="requiredField">
-            <paper-input type="text" label="[[ requiredField.label ]]" on-change="_newRecordFieldChanged"></paper-input>
-        </template>
-        <paper-button raised on-tap="_createNew">Add</paper-button>
-    </p>
+                <!--New-->
+                <paper-dialog id="newDialog">
+                    <h2>Add New Entry to [[ title ]]</h2>
+                    <p>
+                        Enter the following required fields in order to create a new record.
+                    </p>
+                    <p>
+                        <template is="dom-repeat" items="[[ requiredFieldsForNew ]]" as="requiredField">
+                            <paper-input type="text" label="[[ requiredField.label ]]" on-change="_newRecordFieldChanged"></paper-input>
+                        </template>
+                        <paper-button raised on-tap="_createNew">Add</paper-button>
+                    </p>
 
-</paper-dialog>
+                </paper-dialog>
 
-<span hidden$="[[ !_showArray(requiredFieldsForNew) ]]"><paper-icon-button icon="add-circle" on-tap="_showNewDialog"></paper-icon-button></span>
+                <span hidden$="[[ !_showArray(requiredFieldsForNew) ]]"><paper-icon-button icon="add-circle" on-tap="_showNewDialog"></paper-icon-button></span>
 
-<!--Bulk selection action buttons-->
-<template is="dom-repeat" items="[[ bulkActions ]]" as="action">
-    <paper-button raised disabled$="[[ !numberOfLinesSelected ]]" on-tap="_runBulkAction">[[ action.label ]]</paper-button>
-</template>
+                <!--Bulk selection action buttons-->
+                <template is="dom-repeat" items="[[ bulkActions ]]" as="action">
+                    <paper-button raised disabled$="[[ !numberOfLinesSelected ]]" on-tap="_runBulkAction">[[ action.label ]]</paper-button>
+                </template>
 
-<table class="eco-grid" hidden$="[[ !_showTable(searchTerm, hideIfNoKeyword) ]]">
-    <thead>
-        <tr>
-            <!--Bulk selection checkboxes-->
-            <template is="dom-if" if="[[ allowSelect ]]">
-                <th></th>
-            </template>
-            <!--Image -->
-            <template is="dom-if" if="[[ showImage ]]">
-                <th></th>
-            </template>
-            <!--Data Columns-->
-            <template is="dom-repeat" items="[[ dataColumns ]]" as="column">
-                <th class$="[[ _isActiveOrdered(column, params.orderBy) ]]">[[ column.label ]]
-                    <span hidden$="[[ !allowSort ]]">
+                <table class="eco-grid" hidden$="[[ !_showTable(searchTerm, hideIfNoKeyword) ]]">
+                    <thead>
+                        <tr>
+                            <!--Bulk selection checkboxes-->
+                            <template is="dom-if" if="[[ allowSelect ]]">
+                                <th></th>
+                            </template>
+                            <!--Image -->
+                            <template is="dom-if" if="[[ showImage ]]">
+                                <th></th>
+                            </template>
+                            <!--Data Columns-->
+                            <template is="dom-repeat" items="[[ dataColumns ]]" as="column">
+                                <th class$="[[ _isActiveOrdered(column, params.orderBy) ]]">[[ column.label ]]
+                                    <span hidden$="[[ !allowSort ]]">
                         <paper-icon-button icon="filter-list" on-tap="_toggleOrder">
                         </paper-icon-button>
                     </span>
-                </th>
-            </template>
-            <!--Action Columns-->
-            <template is="dom-repeat" items="[[ actionColumns ]]" as="column">
-                <th> [[ column.label ]]</th>
-            </template>
-        </tr>
-    </thead>
-    <tbody hidden$="[[ !rows ]]">
-        <template id="mainlist" is="dom-repeat" items="[[ rows ]]" as="row">
-            <tr>
-                <!--Bulk selection checkboxes-->
-                <template is="dom-if" if="[[ allowSelect ]]">
-                    <td>
-                        <paper-checkbox class="bulkselection-checkbox" on-change="_bulkSelectChanged"></paper-checkbox>
-                    </td>
-                </template>
-                <!--Image -->
-                <template is="dom-if" if="[[ showImage ]]">
-                    <td><img class="line-image" src="[[ publicApiRoot ]]/images/[[ schema ]]/[[ _selectImage(row) ]]?width=100" /></td>
-                </template>
-                <!--Data Columns-->
-                <template is="dom-repeat" items="[[ dataColumns ]]" as="column">
-                    <td class$="listCell cellEdit[[ _showEdit(column, globalAllowEdit) ]]">
-                        <template is="dom-if" if="[[ column.linkTo ]]">
-                            <a href="/admin/view/[[ column.linkSchema ]]/[[ column.linkTable ]]/[[ _getLink(row,column) ]][[ _getView(column) ]]">
+                                </th>
+                            </template>
+                            <!--Action Columns-->
+                            <template is="dom-repeat" items="[[ actionColumns ]]" as="column">
+                                <th> [[ column.label ]]</th>
+                            </template>
+                        </tr>
+                    </thead>
+                    <tbody hidden$="[[ !rows ]]">
+                        <template id="mainlist" is="dom-repeat" items="[[ rows ]]" as="row">
+                            <tr>
+                                <!--Bulk selection checkboxes-->
+                                <template is="dom-if" if="[[ allowSelect ]]">
+                                    <td>
+                                        <paper-checkbox class="bulkselection-checkbox" on-change="_bulkSelectChanged"></paper-checkbox>
+                                    </td>
+                                </template>
+                                <!--Image -->
+                                <template is="dom-if" if="[[ showImage ]]">
+                                    <td><img class="line-image" src="[[ publicApiRoot ]]/images/[[ schema ]]/[[ _selectImage(row) ]]?width=100"
+                                        /></td>
+                                </template>
+                                <!--Data Columns-->
+                                <template is="dom-repeat" items="[[ dataColumns ]]" as="column">
+                                    <td class$="listCell cellEdit[[ _showEdit(column, globalAllowEdit) ]]">
+                                        <template is="dom-if" if="[[ column.linkTo ]]">
+                                            <a href="/admin/view/[[ column.linkSchema ]]/[[ column.linkTable ]]/[[ _getLink(row,column) ]][[ _getView(column) ]]">
                                         [[ _getCell(row,column) ]]
                                         </a>
+                                        </template>
+                                        <template is="dom-if" if="[[ !column.linkTo ]]">
+                                            <template is="dom-if" if="[[ _showEdit(column, globalAllowEdit) ]]">
+                                                <paper-input label="Edit [[ _getCell(row,column) ]]" class="cellInput" type="[[ column.edit.type ]]" value="[[ _getCell(row,column) ]]"
+                                                    on-change="_emitLineUpdateEvent"></paper-input>
+                                            </template>
+                                            <template is="dom-if" if="[[ !_showEdit(column, globalAllowEdit) ]]">
+                                                <div class="listCellContentContainer">
+                                                    [[ _getCell(row,column) ]]
+                                                </div>
+
+                                            </template>
+
+                                        </template>
+                                    </td>
+                                </template>
+                                <!--Action Columns-->
+                                <template is="dom-repeat" items="[[ actionColumns ]]" as="column">
+                                    <td>
+                                        <paper-icon-button icon$="[[ column.icon ]]" on-tap="_runLineAction"></paper-icon--button>
+                                    </td>
+                                </template>
+                            </tr>
                         </template>
-                        <template is="dom-if" if="[[ !column.linkTo ]]">
-                            <template is="dom-if" if="[[ _showEdit(column, globalAllowEdit) ]]">
-                                <paper-input label="Edit [[ _getCell(row,column) ]]" class="cellInput" type="[[ column.edit.type ]]" value="[[ _getCell(row,column) ]]"
-                                    on-change="_emitLineUpdateEvent"></paper-input>
-                            </template>
-                            <template is="dom-if" if="[[ !_showEdit(column, globalAllowEdit) ]]">
-                                <div class="listCellContentContainer">
-                                    [[ _getCell(row,column) ]]
-                                </div>
+                    </tbody>
+                </table>
 
-                            </template>
+                <div style="text-align:center; padding: 1em; font-size: large;" hidden$="[[ rows ]]"> Loading [[ title ]] ...
+                </div>
 
-                        </template>
-                    </td>
-                </template>
-                <!--Action Columns-->
-                <template is="dom-repeat" items="[[ actionColumns ]]" as="column">
-                    <td>
-                        <paper-icon-button icon$="[[ column.icon ]]" on-tap="_runLineAction"></paper-icon--button>
-                    </td>
-                </template>
-            </tr>
-        </template>
-    </tbody>
-</table>
+                <array-selector id="selector" items="{{rows}}" selected="{{bulkSelection}}" multi toggle></array-selector>
 
-<div style="text-align:center; padding: 1em; font-size: large;" hidden$="[[ rows ]]"> Loading [[ title ]] ...
-</div>
-
-<array-selector id="selector" items="{{rows}}" selected="{{bulkSelection}}" multi toggle></array-selector>
-
-<content></content>
+                <content></content>
 
 
 
-</template>
+    </template>
 
-<script>
+    <script>
         Polymer({
 
             is: 'eco-list-block',
@@ -275,7 +277,7 @@
                 bulkActions: Array,
                 requiredFieldsForNew: {
                     type: Array,
-                    value: function(){ return []; }
+                    value: function () { return []; }
                 },
                 params: {
                     type: Object,
@@ -491,8 +493,8 @@
                 return (column.edit && globalEdit);
             },
 
-            _showArray: function(array){
-                if (array.length > 0){ return true; } else { return false; }
+            _showArray: function (array) {
+                if (array.length > 0) { return true; } else { return false; }
             },
 
             _bulkSelectionChanged: function () {

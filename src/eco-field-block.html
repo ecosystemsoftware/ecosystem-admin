@@ -27,15 +27,14 @@
 <link rel="import" href="eco-list-block.html">
 <link rel="import" href="eco-behaviors.html">
 <!--Set up the bundle imports-->
-<!--<link rel="import" href="../../admin-imports.html">-->
+<link rel="import" href="eco-bundle-imports.html">
 
 <dom-module id="eco-field-block">
 
     <template>
 
         <style include="custom-styles">
-
-             :host {
+            :host {
                 display: block;
                 margin: 0.5em;
                 color: var(--primary-color);
@@ -43,11 +42,11 @@
                 box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
                 padding: 0.5em;
             }
-
-           :host([is-horizontal]) .field {
-                display:inline-block;
+            
+            :host([is-horizontal]) .field {
+                display: inline-block;
             }
-
+            
             .title {
                 font-size: 125%;
                 font-weight: bold;
@@ -55,145 +54,146 @@
                 margin-bottom: 0.5em;
                 color: var(--primary-text-color);
             }
-
+            
             paper-input.fieldInput {
-                --paper-input-container-disabled:{
+                --paper-input-container-disabled: {
                     filter: alpha(opacity=100);
-	                opacity: 1;
+                    opacity: 1;
                 }
                 --paper-input-container-underline: {
                     display: none;
-                };
+                }
+                ;
                 --paper-input-container-underline-disabled: {
                     display: none;
-                };
-                --paper-input-container-underline-focus: {
-                    
-                };
+                }
+                ;
+                --paper-input-container-underline-focus: {}
+                ;
             }
-
         </style>
 
 
-<div class="title">[[ title ]]</div>
+        <div class="title">[[ title ]]</div>
 
-<template is="dom-repeat" items="[[ fields ]]" as="field">
-    
-    <div class="field">
+        <template is="dom-repeat" items="[[ fields ]]" as="field">
 
-        <!--For dropdown fields-->
-        <template is="dom-if" if="[[ field.edit.dropdown ]]">
-            [[ _updateConfig(field.edit.items) ]]
-            <vaadin-combo-box disabled$="[[ !_isEdit(globalAllowEdit, field) ]]" label="[[ field.label ]]" value="[[ _getValue(field, model) ]]"
-                item-label-path="[[ field.edit.labelPath ]]" item-value-path="id" items="[[ _showConfigList(config.*, field.edit.items) ]]">
-                <template is="dom-if" if="[[ _isEdit(globalAllowEdit, field) ]]">
-                    <iron-icon prefix icon="editor:mode-edit"></iron-icon>
+            <div class="field">
+
+                <!--For dropdown fields-->
+                <template is="dom-if" if="[[ field.edit.dropdown ]]">
+                    [[ _updateConfig(field.edit.items) ]]
+                    <vaadin-combo-box disabled$="[[ !_isEdit(globalAllowEdit, field) ]]" label="[[ field.label ]]" value="[[ _getValue(field, model) ]]"
+                        item-label-path="[[ field.edit.labelPath ]]" item-value-path="id" items="[[ _showConfigList(config.*, field.edit.items) ]]">
+                        <template is="dom-if" if="[[ _isEdit(globalAllowEdit, field) ]]">
+                            <iron-icon prefix icon="editor:mode-edit"></iron-icon>
+                        </template>
+                        </vaadin-combo-box>
                 </template>
-            </vaadin-combo-box>
+
+                <!--For non-dropdown fields-->
+                <template is="dom-if" if="[[ !field.edit.dropdown ]]">
+                    <paper-input class="fieldInput" type="text" label="[[ field.label ]]" value="[[ _getValue(field, model) ]]" disabled$="[[ !_isEdit(globalAllowEdit, field) ]]"
+                        on-change="_emitFieldChangedEvent">
+                        <template is="dom-if" if="[[ _isEdit(globalAllowEdit, field) ]]">
+                            <iron-icon prefix icon="editor:mode-edit"></iron-icon>
+                        </template>
+                        </paper-input>
+                </template>
+
+            </div>
+
         </template>
 
-        <!--For non-dropdown fields-->
-        <template is="dom-if" if="[[ !field.edit.dropdown ]]">
-            <paper-input class="fieldInput" type="text" label="[[ field.label ]]" value="[[ _getValue(field, model) ]]" disabled$="[[ !_isEdit(globalAllowEdit, field) ]]"
-                on-change="_emitFieldChangedEvent">
-                <template is="dom-if" if="[[ _isEdit(globalAllowEdit, field) ]]">
-                    <iron-icon prefix icon="editor:mode-edit"></iron-icon>
-                </template>
-            </paper-input>
-        </template>
+    </template>
 
-    </div>
+    <script>
+        Polymer({
 
-</template>
+            is: 'eco-field-block',
 
-</template>
+            behaviors: [EcoBehaviors.ApiBehavior, EcoCustom.Properties, EcoCustom.Actions],
 
-<script>
-    Polymer({
-
-        is: 'eco-field-block',
-
-        behaviors: [EcoBehaviors.ApiBehavior, EcoCustom.Properties, EcoCustom.Actions],
-
-        properties: {
-            model: {
-                type: Object,
-                value: function () {
-                    return {};
+            properties: {
+                model: {
+                    type: Object,
+                    value: function () {
+                        return {};
+                    }
+                },
+                blockConfig: {
+                    type: Object,
+                    observer: '_setBlockConfig'
+                },
+                globalAllowEdit: {
+                    type: Boolean,
+                    value: false
+                },
+                isHorizontal: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+                title: String,
+                fields: Array,
+                type: String,
+                config: {
+                    type: Object
                 }
             },
-            blockConfig: {
-                type: Object,
-                observer: '_setBlockConfig'
+
+            _setBlockConfig: function (newBlockConfig) {
+                //Need to RESET the attributes otherwise previous view will not be completely reset when block changes.
+                //This is a bit hacky - need to think of a better way
+                this.title = "";
+                this.class = "";
+                this.isHorizontal = false;
+                this.fields = [];
+
+                //Merge in the the block configuration object specified as an attribute.
+                //The reason we do it like this rather than passing in the individual attributes is that some attributes may not be be specified
+                // in the block config.  When this happens, and if we specify attributes that don't exist when we create the element, the defaults get overriden
+                // and the whole things break.
+                Object.assign(this, newBlockConfig);
             },
-            globalAllowEdit: {
-                type: Boolean,
-                value: false
+
+            _isEdit: function (global, local) {
+                if (global) {
+                    return local.edit;
+                } else {
+                    return false;
+                }
             },
-            isHorizontal: {
-                type: Boolean,
-                value: false,
-                reflectToAttribute: true
+
+            _getValue: function (field, model) {
+                return model[field.name];
             },
-            title: String,
-            fields: Array,
-            type: String,
-            config: {
-                type: Object
-            }
-        },
 
-        _setBlockConfig: function (newBlockConfig) {
-            //Need to RESET the attributes otherwise previous view will not be completely reset when block changes.
-            //This is a bit hacky - need to think of a better way
-            this.title = "";
-            this.class = "";
-            this.isHorizontal = false;
-            this.fields = [];
+            _emitFieldChangedEvent: function (e) {
+                //Normalise first to avoid cross browser shady/shadow issues
+                var n = Polymer.dom(e);
 
-            //Merge in the the block configuration object specified as an attribute.
-            //The reason we do it like this rather than passing in the individual attributes is that some attributes may not be be specified
-            // in the block config.  When this happens, and if we specify attributes that don't exist when we create the element, the defaults get overriden
-            // and the whole things break.
-            Object.assign(this, newBlockConfig);
-        },
+                this.debounce('updateRequest', function () {
+                    this.fire('recordUpdated', {
+                        "fieldUpdated": n.event.model.__data__.field.name,
+                        "newValue": n.rootTarget.__data__.value || n.event.target.__data__.bindValue //Deal with safari/chrome differences 
+                    });
+                }, 500);
+            },
 
-        _isEdit: function (global, local) {
-            if (global) {
-                return local.edit;
-            } else {
-                return false;
-            }
-        },
-
-        _getValue: function (field, model) {
-            return model[field.name];
-        },
-
-        _emitFieldChangedEvent: function (e) {
-            //Normalise first to avoid cross browser shady/shadow issues
-            var n = Polymer.dom(e);
-
-            this.debounce('updateRequest', function () {
-                this.fire('recordUpdated', {
-                    "fieldUpdated": n.event.model.__data__.field.name,
-                    "newValue": n.rootTarget.__data__.value || n.event.target.__data__.bindValue //Deal with safari/chrome differences 
+            _updateConfig: function (table) {
+                this.fire('updateConfig', {
+                    "table": table
                 });
-            }, 500);
-        },
+            },
 
-        _updateConfig: function (table) {
-            this.fire('updateConfig', {
-                "table": table
-            });
-        },
-
-        _showConfigList: function (config, list) {
-            return this.config[list];
-        }
+            _showConfigList: function (config, list) {
+                return this.config[list];
+            }
 
 
-    });
-</script>
+        });
+
+    </script>
 
 </dom-module>

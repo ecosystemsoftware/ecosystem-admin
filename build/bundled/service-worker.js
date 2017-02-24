@@ -29,7 +29,7 @@
 
 
 /* eslint-disable quotes, comma-spacing */
-var PrecacheConfig = [["/bower_components/webcomponentsjs/webcomponents-lite.min.js","f04ed23700daeb36f637bfe095960659"],["/index.html","a39f067ad2ae1499d4f1b1acd7212533"],["/manifest.json","012ceb3e37b6134a3361d69b92845e73"],["/src/eco-admin-app.html","46977b4c024f93827c114121201857c1"]];
+var PrecacheConfig = [["/bower_components/webcomponentsjs/webcomponents-lite.min.js","f04ed23700daeb36f637bfe095960659"],["/index.html","a8084e1a04dfa1eb4b3c1fa22d3969e3"],["/manifest.json","012ceb3e37b6134a3361d69b92845e73"],["/src/eco-admin-app.html","8a9904fd85284a96e7f2f02efbdb9558"]];
 /* eslint-enable quotes, comma-spacing */
 var CacheNamePrefix = 'sw-precache-v1--' + (self.registration ? self.registration.scope : '') + '-';
 

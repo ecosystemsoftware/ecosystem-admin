@@ -29,99 +29,79 @@
 <link rel="import" href="eco-field-block.html">
 <link rel="import" href="eco-behaviors.html">
 <!--Set up the bundle imports-->
-<!--<link rel="import" href="../../admin-imports.html">-->
+<link rel="import" href="eco-bundle-imports.html">
 
 <dom-module id="eco-view">
     <template>
 
-		<style include="custom-styles">
-		</style>
+        <style include="custom-styles">
 
-		<!--TODO:
+        </style>
+
+        <!--TODO:
 		- Change the param part of the URL when the view changes
         - Stop the XHR calls when view is initialised with any path
         -->
 
 
 
-	<!--Ajax request for the view specification-->
-	<iron-ajax auto id="viewBlocksRequest" method="GET" url="/bundles/[[ schemaData.id ]]/[[ queries.view ]].json"
-	handle-as="json" last-response="{{ viewBlocks }}"></iron-ajax>
+        <!--Ajax request for the view specification-->
+        <iron-ajax auto id="viewBlocksRequest" method="GET" url="/bundles/[[ schemaData.id ]]/[[ queries.view ]].json" handle-as="json"
+            last-response="{{ viewBlocks }}"></iron-ajax>
 
-	<!--Ajax request for the views list-->
-	<iron-ajax auto id="viewListRequest" method="GET" url="/views"
-    handle-as="json" last-response="{{ viewsAvailable }}"></iron-ajax>
+            <!--Ajax request for the views list-->
+            <iron-ajax auto id="viewListRequest" method="GET" url="/views" handle-as="json" last-response="{{ viewsAvailable }}"></iron-ajax>
 
-	 <!--Ajax request for the record-->
-    <iron-ajax id="recordRequest" headers="[[ _getJWT(jwt) ]]" url="[[ apiRoot ]]/[[ schemaData.id ]]/[[ tableData.id ]]/[[ recordData.id ]]" handle-as="json" last-response="{{record}}" debounce-duration="300"></iron-ajax>
+            <!--Ajax request for the record-->
+            <iron-ajax id="recordRequest" headers="[[ _getJWT(jwt) ]]" url="[[ apiRoot ]]/[[ schemaData.id ]]/[[ tableData.id ]]/[[ recordData.id ]]"
+                handle-as="json" last-response="{{record}}" debounce-duration="300"></iron-ajax>
 
-	<!--Ajax request for actions-->
-    <iron-ajax headers="[[ _getJWT(jwt) ]]" id="actionRequest" handle-as="json" content-type="application/json"></iron-ajax>
+                <!--Ajax request for actions-->
+                <iron-ajax headers="[[ _getJWT(jwt) ]]" id="actionRequest" handle-as="json" content-type="application/json"></iron-ajax>
 
-    <app-route route="{{route}}"
-        pattern="/:id"
-        data="{{schemaData}}"
-        tail="{{subroute}}"
-        query-params="{{ queries }}">
-    </app-route>
+                <app-route route="{{route}}" pattern="/:id" data="{{schemaData}}" tail="{{subroute}}" query-params="{{ queries }}">
+                </app-route>
 
-	<app-route
-		route="{{subroute}}"
-		pattern="/:id"
-		data="{{tableData}}"
-		tail="{{subsubroute}}">
-	</app-route>
+                <app-route route="{{subroute}}" pattern="/:id" data="{{tableData}}" tail="{{subsubroute}}">
+                </app-route>
 
-	<app-route
-		route="{{subsubroute}}">
-	</app-route>
+                <app-route route="{{subsubroute}}">
+                </app-route>
 
 
-	<app-toolbar>
-		<!--Global edit toggle-->
-		<paper-toggle-button checked="{{ globalAllowEdit }}">
-				<iron-icon icon="editor:mode-edit"></iron-icon>
-		</paper-toggle-button>
-	
-	<div main-title></div>
+                <app-toolbar>
+                    <!--Global edit toggle-->
+                    <paper-toggle-button checked="{{ globalAllowEdit }}">
+                        <iron-icon icon="editor:mode-edit"></iron-icon>
+                    </paper-toggle-button>
 
-	<!--View selection box-->
-	<vaadin-combo-box label="Choose a view" value="{{ queries.view }}" item-label-path="description" item-value-path="name"
-	items="[[ _getAvailableViewsForThisTable(viewsAvailable, schemaData, tableData, recordData) ]]"></vaadin-combo-box>
+                    <div main-title></div>
 
-	</app-toolbar>
+                    <!--View selection box-->
+                    <vaadin-combo-box label="Choose a view" value="{{ queries.view }}" item-label-path="description" item-value-path="name" items="[[ _getAvailableViewsForThisTable(viewsAvailable, schemaData, tableData, recordData) ]]"></vaadin-combo-box>
 
-	<!--Confirmation toast-->
-	<paper-toast horizontal-align="right" id="updateConfirmationToast"></paper-toast>
+                </app-toolbar>
 
-	<!--Block repeat template-->
-	<template is="dom-repeat" items="[[ viewBlocks ]]" as="block">
-	
-			<!--List Block-->
-			<!--Rather than setting each individual attribute individually according to what is in the 'block', we send the whole 'block' object
+                <!--Confirmation toast-->
+                <paper-toast horizontal-align="right" id="updateConfirmationToast"></paper-toast>
+
+                <!--Block repeat template-->
+                <template is="dom-repeat" items="[[ viewBlocks ]]" as="block">
+
+                    <!--List Block-->
+                    <!--Rather than setting each individual attribute individually according to what is in the 'block', we send the whole 'block' object
 			as 'block-config'.  The reason for doing it like this is to not set attributes that havent been specified in the block config file.
 			This way, the defaults set in eco-list-block will hold correctly when not set in the file-->
-			<template is="dom-if" if="[[ _isListBlock(block) ]]">
-		      <eco-list-block
-				jwt="[[ jwt ]]"
-				global-allow-edit='[[ globalAllowEdit ]]'
-                schema="[[ _getSchema(schemaData.id, block) ]]"
-				table="[[ _getTable(tableData.id, block) ]]"
-				restrict-record="[[ recordData.id ]]"
-				block-config="[[ block ]]"
-				></eco-list-block>		
-			</template>
+                    <template is="dom-if" if="[[ _isListBlock(block) ]]">
+                        <eco-list-block jwt="[[ jwt ]]" global-allow-edit='[[ globalAllowEdit ]]' schema="[[ _getSchema(schemaData.id, block) ]]"
+                            table="[[ _getTable(tableData.id, block) ]]" restrict-record="[[ recordData.id ]]" block-config="[[ block ]]"></eco-list-block>
+                    </template>
 
-    <template is="dom-if" if="[[ !_isListBlock(block) ]]">
-		      <eco-field-block
-				global-allow-edit='[[ globalAllowEdit ]]'
-				block-config="[[ block ]]"
-				model="[[ record ]]"
-				config="[[ config ]]"
-				></eco-field-block>		
-			</template>
+                    <template is="dom-if" if="[[ !_isListBlock(block) ]]">
+                        <eco-field-block global-allow-edit='[[ globalAllowEdit ]]' block-config="[[ block ]]" model="[[ record ]]" config="[[ config ]]"></eco-field-block>
+                    </template>
 
-    </template>
+                </template>
 
 
     </template>
@@ -179,16 +159,16 @@
             //This is a very important work around!
             // Will actually return null if there is no record id in the path
             // or there is no subsubroute yet
-            _getRecordId: function(subsubroute){
+            _getRecordId: function (subsubroute) {
                 if (subsubroute.path) {
-                    recordId = subsubroute.path.split("/"); 
+                    recordId = subsubroute.path.split("/");
                     if (recordId) { return { "id": recordId[1] }; } else { return { "id": null } }
                 } else {
                     return { "id": null }
                 }
             },
 
-            _errorLoadingViewBlocks: function() {
+            _errorLoadingViewBlocks: function () {
                 if (this.queries.view) {
                     this._message("Error loading view: " + this.queries.view + ". Check that the view file exists");
                 } else {
@@ -197,7 +177,7 @@
 
             },
 
-            _updatedOK: function(e) {
+            _updatedOK: function (e) {
                 this._message("Action Completed");
                 //Now updated all list blocks in this view by firing their refresh method
                 var listBlocks = Polymer.dom(this.root).querySelectorAll('eco-list-block');
@@ -211,27 +191,27 @@
                 }
             },
 
-            _updateError: function(e) {
+            _updateError: function (e) {
                 this._message("Action could not be completed");
             },
 
-            _message: function(text) {
+            _message: function (text) {
                 this.$.updateConfirmationToast.text = text;
                 this.$.updateConfirmationToast.open();
             },
 
-            _showMessage: function(e) {
+            _showMessage: function (e) {
                 this._message(e.detail.text);
             },
 
-            _isListBlock: function(block) {
+            _isListBlock: function (block) {
                 return block.type == "list";
             },
 
             // Retrieves the list of possible views for this table from the JSON configuration object loaded.
             // Important: function should accepct viewAvailable object as argument, so that when AJAX call refreshes the list, this function is run
             // Important: function should accept tableId as argument, so that when it changes due to a URL chage, the function is run
-            _getAvailableViewsForThisTable: function(viewsAvailable, schema, table, record) {
+            _getAvailableViewsForThisTable: function (viewsAvailable, schema, table, record) {
                 //TODO: returns an error until the viewsavailable come back
                 var thisViewsAvailable = viewsAvailable[schema.id][table.id];
                 if (record.id && thisViewsAvailable) {
@@ -243,7 +223,7 @@
                 }
             },
 
-            _updateRecord: function(e) {
+            _updateRecord: function (e) {
                 this.$.actionRequest.method = "PATCH";
                 this.$.actionRequest.url = this.apiRoot + "/" + this.schemaData.id + "/" + this.tableData.id + "/" + this.recordData.id;
                 postBody = {};
@@ -252,14 +232,14 @@
                 this.$.actionRequest.generateRequest();
             },
 
-            _recordChanged: function(r) {
+            _recordChanged: function (r) {
                 if (r) {
                     this.$.recordRequest.generateRequest();
                 }
             },
 
             // Allows block specification to override table read from URL.  Used when a list block is embedded
-            _getTable: function(tableId, block) {
+            _getTable: function (tableId, block) {
                 return block.table || tableId
             },
 

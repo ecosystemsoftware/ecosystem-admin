@@ -14,70 +14,71 @@
 <link rel="import" href="eco-field-block.html">
 <link rel="import" href="eco-behaviors.html">
 
-
+<link rel="import" href="eco-bundle-imports.html">
 
 </head><body><dom-module id="eco-view">
     <template>
 
-		<style include="custom-styles">
-		</style>
+        <style include="custom-styles">
 
-		
+        </style>
 
-
-
-	
-	<iron-ajax auto="" id="viewBlocksRequest" method="GET" url="/bundles/[[ schemaData.id ]]/[[ queries.view ]].json" handle-as="json" last-response="{{ viewBlocks }}"></iron-ajax>
-
-	
-	<iron-ajax auto="" id="viewListRequest" method="GET" url="/views" handle-as="json" last-response="{{ viewsAvailable }}"></iron-ajax>
-
-	 
-    <iron-ajax id="recordRequest" headers="[[ _getJWT(jwt) ]]" url="[[ apiRoot ]]/[[ schemaData.id ]]/[[ tableData.id ]]/[[ recordData.id ]]" handle-as="json" last-response="{{record}}" debounce-duration="300"></iron-ajax>
-
-	
-    <iron-ajax headers="[[ _getJWT(jwt) ]]" id="actionRequest" handle-as="json" content-type="application/json"></iron-ajax>
-
-    <app-route route="{{route}}" pattern="/:id" data="{{schemaData}}" tail="{{subroute}}" query-params="{{ queries }}">
-    </app-route>
-
-	<app-route route="{{subroute}}" pattern="/:id" data="{{tableData}}" tail="{{subsubroute}}">
-	</app-route>
-
-	<app-route route="{{subsubroute}}">
-	</app-route>
+        
 
 
-	<app-toolbar>
-		
-		<paper-toggle-button checked="{{ globalAllowEdit }}">
-				<iron-icon icon="editor:mode-edit"></iron-icon>
-		</paper-toggle-button>
-	
-	<div main-title=""></div>
 
-	
-	<vaadin-combo-box label="Choose a view" value="{{ queries.view }}" item-label-path="description" item-value-path="name" items="[[ _getAvailableViewsForThisTable(viewsAvailable, schemaData, tableData, recordData) ]]"></vaadin-combo-box>
+        
+        <iron-ajax auto="" id="viewBlocksRequest" method="GET" url="/bundles/[[ schemaData.id ]]/[[ queries.view ]].json" handle-as="json" last-response="{{ viewBlocks }}"></iron-ajax>
 
-	</app-toolbar>
+            
+            <iron-ajax auto="" id="viewListRequest" method="GET" url="/views" handle-as="json" last-response="{{ viewsAvailable }}"></iron-ajax>
 
-	
-	<paper-toast horizontal-align="right" id="updateConfirmationToast"></paper-toast>
+            
+            <iron-ajax id="recordRequest" headers="[[ _getJWT(jwt) ]]" url="[[ apiRoot ]]/[[ schemaData.id ]]/[[ tableData.id ]]/[[ recordData.id ]]" handle-as="json" last-response="{{record}}" debounce-duration="300"></iron-ajax>
 
-	
-	<template is="dom-repeat" items="[[ viewBlocks ]]" as="block">
-	
-			
-			
-			<template is="dom-if" if="[[ _isListBlock(block) ]]">
-		      <eco-list-block jwt="[[ jwt ]]" global-allow-edit="[[ globalAllowEdit ]]" schema="[[ _getSchema(schemaData.id, block) ]]" table="[[ _getTable(tableData.id, block) ]]" restrict-record="[[ recordData.id ]]" block-config="[[ block ]]"></eco-list-block>		
-			</template>
+                
+                <iron-ajax headers="[[ _getJWT(jwt) ]]" id="actionRequest" handle-as="json" content-type="application/json"></iron-ajax>
 
-    <template is="dom-if" if="[[ !_isListBlock(block) ]]">
-		      <eco-field-block global-allow-edit="[[ globalAllowEdit ]]" block-config="[[ block ]]" model="[[ record ]]" config="[[ config ]]"></eco-field-block>		
-			</template>
+                <app-route route="{{route}}" pattern="/:id" data="{{schemaData}}" tail="{{subroute}}" query-params="{{ queries }}">
+                </app-route>
 
-    </template>
+                <app-route route="{{subroute}}" pattern="/:id" data="{{tableData}}" tail="{{subsubroute}}">
+                </app-route>
+
+                <app-route route="{{subsubroute}}">
+                </app-route>
+
+
+                <app-toolbar>
+                    
+                    <paper-toggle-button checked="{{ globalAllowEdit }}">
+                        <iron-icon icon="editor:mode-edit"></iron-icon>
+                    </paper-toggle-button>
+
+                    <div main-title=""></div>
+
+                    
+                    <vaadin-combo-box label="Choose a view" value="{{ queries.view }}" item-label-path="description" item-value-path="name" items="[[ _getAvailableViewsForThisTable(viewsAvailable, schemaData, tableData, recordData) ]]"></vaadin-combo-box>
+
+                </app-toolbar>
+
+                
+                <paper-toast horizontal-align="right" id="updateConfirmationToast"></paper-toast>
+
+                
+                <template is="dom-repeat" items="[[ viewBlocks ]]" as="block">
+
+                    
+                    
+                    <template is="dom-if" if="[[ _isListBlock(block) ]]">
+                        <eco-list-block jwt="[[ jwt ]]" global-allow-edit="[[ globalAllowEdit ]]" schema="[[ _getSchema(schemaData.id, block) ]]" table="[[ _getTable(tableData.id, block) ]]" restrict-record="[[ recordData.id ]]" block-config="[[ block ]]"></eco-list-block>
+                    </template>
+
+                    <template is="dom-if" if="[[ !_isListBlock(block) ]]">
+                        <eco-field-block global-allow-edit="[[ globalAllowEdit ]]" block-config="[[ block ]]" model="[[ record ]]" config="[[ config ]]"></eco-field-block>
+                    </template>
+
+                </template>
 
 
     </template>
