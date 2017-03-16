@@ -123,12 +123,12 @@
         </style>
 
         <!--Ajax request for the rows in the grid _getParams(where, orderBy, limit, desc)-->
-        <iron-ajax headers="[[ _getJWT(jwt) ]]" auto id="listRequest" method="GET" params="[[ params ]]" url="[[ apiRoot ]]/[[ schema ]]/[[ table ]]"
+        <iron-ajax headers="[[ _getJWT(jwt) ]]" auto id="listRequest" method="GET" params="[[ params ]]" url="[[ apiRoot ]]/api/[[ schema ]]/[[ table ]]"
             handle-as="json" last-response="{{ rows }}" debounce-duration="300"></iron-ajax>
             <!--Ajax request for actions-->
             <iron-ajax headers="[[ _getJWT(jwt) ]]" id="actionRequest" handle-as="json" content-type="application/json"></iron-ajax>
             <!--Ajax request for new record-->
-            <iron-ajax method="POST" body="[[ newRecord ]]" url="[[ apiRoot ]]/[[ schema ]]/[[ table ]]" headers="[[ _getJWT(jwt) ]]"
+            <iron-ajax method="POST" body="[[ newRecord ]]" url="[[ apiRoot ]]/api/[[ schema ]]/[[ table ]]" headers="[[ _getJWT(jwt) ]]"
                 id="newRecordRequest" handle-as="json" content-type="application/json"></iron-ajax>
 
                 <div class="title">
@@ -200,14 +200,14 @@
                                 </template>
                                 <!--Image -->
                                 <template is="dom-if" if="[[ showImage ]]">
-                                    <td><img class="line-image" src="[[ publicApiRoot ]]/images/[[ schema ]]/[[ _selectImage(row) ]]?width=100"
+                                    <td><img class="line-image" src="[[ apiRoot ]]/images/[[ schema ]]/[[ _selectImage(row) ]]?width=100"
                                         /></td>
                                 </template>
                                 <!--Data Columns-->
                                 <template is="dom-repeat" items="[[ dataColumns ]]" as="column">
                                     <td class$="listCell cellEdit[[ _showEdit(column, globalAllowEdit) ]]">
                                         <template is="dom-if" if="[[ column.linkTo ]]">
-                                            <a href="/admin/view/[[ column.linkSchema ]]/[[ column.linkTable ]]/[[ _getLink(row,column) ]][[ _getView(column) ]]">
+                                            <a href="/view/[[ column.linkSchema ]]/[[ column.linkTable ]]/[[ _getLink(row,column) ]][[ _getView(column) ]]">
                                         [[ _getCell(row,column) ]]
                                         </a>
                                         </template>
@@ -417,7 +417,7 @@
             //Built-in Line Actions which can be referenced from actionColumns without writing a function in custom actions
             deleteLine: function (item, c) {
                 c.$.actionRequest.method = "DELETE";
-                c.$.actionRequest.url = c.apiRoot + "/" + c.schema + "/" + c.table + "/" + item.id;
+                c.$.actionRequest.url = c.apiRoot + "/api/" + c.schema + "/" + c.table + "/" + item.id;
                 c.$.actionRequest.generateRequest();
             },
 
@@ -437,7 +437,7 @@
             },
 
             _newRecordCreated: function (e) {
-                window.location = ("/admin/view/" + this.schema + "/" + this.table + "/" + e.detail.__data__.response.id + "?view=" + this.newRecordLinkView);
+                window.location = ("/view/" + this.schema + "/" + this.table + "/" + e.detail.__data__.response.id + "?view=" + this.newRecordLinkView);
             },
 
             _newRecordNotCreated: function (e) {
@@ -611,7 +611,7 @@
 
             _updateLine: function (e) {
                 this.$.actionRequest.method = "PATCH";
-                this.$.actionRequest.url = this.apiRoot + "/" + this.schema + "/" + this.table + "/" + e.detail.lineUpdated;
+                this.$.actionRequest.url = this.apiRoot + "/api/" + this.schema + "/" + this.table + "/" + e.detail.lineUpdated;
                 postBody = {};
                 postBody[e.detail.fieldUpdated] = e.detail.newValue;
                 this.$.actionRequest.body = postBody;

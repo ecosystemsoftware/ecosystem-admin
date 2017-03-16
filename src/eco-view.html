@@ -46,14 +46,14 @@
 
 
         <!--Ajax request for the view specification-->
-        <iron-ajax auto id="viewBlocksRequest" method="GET" url="/bundles/[[ schemaData.id ]]/[[ queries.view ]].json" handle-as="json"
+        <iron-ajax auto id="viewBlocksRequest" method="GET" url="[[ apiRoot ]]/admin-panel/[[ schemaData.id ]]/[[ queries.view ]].json" handle-as="json"
             last-response="{{ viewBlocks }}"></iron-ajax>
 
             <!--Ajax request for the views list-->
-            <iron-ajax auto id="viewListRequest" method="GET" url="/views" handle-as="json" last-response="{{ viewsAvailable }}"></iron-ajax>
+            <iron-ajax auto id="viewListRequest" method="GET" url="[[ apiRoot ]]/admin-panel/views" handle-as="json" last-response="{{ viewsAvailable }}"></iron-ajax>
 
             <!--Ajax request for the record-->
-            <iron-ajax id="recordRequest" headers="[[ _getJWT(jwt) ]]" url="[[ apiRoot ]]/[[ schemaData.id ]]/[[ tableData.id ]]/[[ recordData.id ]]"
+            <iron-ajax id="recordRequest" headers="[[ _getJWT(jwt) ]]" url="[[ apiRoot ]]/api/[[ schemaData.id ]]/[[ tableData.id ]]/[[ recordData.id ]]"
                 handle-as="json" last-response="{{record}}" debounce-duration="300"></iron-ajax>
 
                 <!--Ajax request for actions-->
@@ -225,7 +225,7 @@
 
             _updateRecord: function (e) {
                 this.$.actionRequest.method = "PATCH";
-                this.$.actionRequest.url = this.apiRoot + "/" + this.schemaData.id + "/" + this.tableData.id + "/" + this.recordData.id;
+                this.$.actionRequest.url = this.apiRoot + "/api/" + this.schemaData.id + "/" + this.tableData.id + "/" + this.recordData.id;
                 postBody = {};
                 postBody[e.detail.fieldUpdated] = e.detail.newValue;
                 this.$.actionRequest.body = postBody;

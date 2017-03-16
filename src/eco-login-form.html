@@ -87,16 +87,16 @@
                     this once per machine, or until you decide to log out.
                 </div>
 
-                <form is="iron-form" id="requestCodeForm" content-type="application/json" method="post" action="[[ publicApiRoot ]]/magiccode">
+                <form is="iron-form" id="requestCodeForm" content-type="application/json" method="post" action="[[ apiRoot ]]/auth/magiccode">
                     <paper-input error-message="Please enter a valid email address" name="email" label="Step 1: Enter email here to request code"
                         type="email" value="{{ email }}" required></paper-input>
                         <paper-button raised on-tap="_submitRequestCodeForm">Request Code</paper-button>
                 </form>
 
-                <form is="iron-form" id="loginForm" content-type="application/json" method="post" action="[[ publicApiRoot ]]/login">
-                    <paper-input error-message="Please enter a valid email address" name="username" label="You are logging in with this email address"
+                <form is="iron-form" id="loginForm" content-type="application/json" method="post" action="[[ apiRoot ]]/auth/login">
+                    <paper-input error-message="Please enter a valid email address" name="email" label="You are logging in with this email address"
                         type="email" value="[[ email ]]" required></paper-input>
-                        <paper-input name="password" label="Enter the 6-character code you received here" type="text" minlength="6" error-message="Please enter a valid 6-character code"
+                        <paper-input name="code" label="Enter the 6-character code you received here" type="text" minlength="6" error-message="Please enter a valid 6-character code"
                             required></paper-input>
                             <div id="loginActions">
                                 <paper-button raised on-tap="_submitLoginForm">Login</paper-button>

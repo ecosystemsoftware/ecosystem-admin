@@ -102,11 +102,11 @@
         </style>
 
         <!--Ajax request for the menu list-->
-        <iron-ajax auto id="menuListRequest" method="GET" url="/menu" handle-as="json" last-response="{{ menusAvailable }}"></iron-ajax>
+        <iron-ajax auto id="menuListRequest" method="GET" url="[[ apiRoot ]]/admin-panel/menu" handle-as="json" last-response="{{ menusAvailable }}"></iron-ajax>
 
         <!-- App location and routing -->
         <app-location route="{{route}}"></app-location>
-        <app-route route="{{route}}" pattern="/admin/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
+        <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
 
         <!-- Local storage for JWT -->
         <iron-localstorage use-raw name="token" value="{{jwt}}"></iron-localstorage>
@@ -137,7 +137,7 @@ which will immidiately hide the login-form component and activate the main app--
                         <template is="dom-repeat" items="[[ bundlesInstalled ]]" as="bundle">
                             <h2>[[ _getBundleMenuTitle(bundle, menusAvailable) ]]</h2>
                             <template is="dom-repeat" items="[[ _getBundleMenuItems(bundle, menusAvailable) ]]" as="menuItem">
-                                <a href="/admin/view/{{ menuItem.schema }}/{{ menuItem.table }}?view={{ menuItem.view }}">{{ menuItem.title }}</a>
+                                <a href="/view/{{ menuItem.schema }}/{{ menuItem.table }}?view={{ menuItem.view }}">{{ menuItem.title }}</a>
                             </template>
                         </template>
                     </iron-selector>

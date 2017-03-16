@@ -1,4 +1,4 @@
-![](https://raw.githubusercontent.com/ecosystemsoftware/ecosystem-website/master/themes/ecosystem/static/images/eco-logo-colour.png)
+**Note: This was the first version of the EcoSystem admin panel, built in Polymer.  It has been abandoned in favour of a differerent architecture, but the repository remains here as a reference and does contain some useful inspiration if you're looking for guidance on how to use Polymer with EcoSystem.  Not adviseable to use in production.**
 
 # EcoSystem Admin Panel App
 
